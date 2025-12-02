@@ -2,1691 +2,1209 @@
 
 ## Overview
 
-Task & Project Management Tool là một ứng dụng desktop/web được xây dựng theo kiến trúc phân lớp (Layered Architecture) với mô hình MVC (Model-View-Controller). Hệ thống sử dụng các design patterns phổ biến trong OOP như Repository Pattern, Service Layer Pattern, Factory Pattern, và Observer Pattern để đảm bảo tính mở rộng, bảo trì và tuân thủ các nguyên tắc SOLID.
+Task & Project Management Tool là một ứng dụng full-stack được xây dựng theo kiến trúc client-server với backend REST API sử dụng Java Spring Boot và frontend web application sử dụng React. Hệ thống áp dụng các design patterns và nguyên lý OOP để đảm bảo tính mở rộng, bảo trì và kiểm thử.
 
-Hệ thống được thiết kế để hỗ trợ các nhóm phát triển phần mềm áp dụng phương pháp Agile/Scrum, cung cấp các tính năng quản lý dự án, sprint, task, và báo cáo tiến độ một cách trực quan và hiệu quả.
+### Technology Stack
+
+**Backend:**
+- Java 17+
+- Spring Boot 3.x (Spring Web, Spring Data JPA, Spring Security)
+- MySQL 8.0
+- Maven
+
+**Frontend:**
+- React 18+
+- React Router (Navigation)
+- Axios (HTTP client)
+- Material-UI hoặc Ant Design (UI components)
+
+**Development Tools:**
+- IntelliJ IDEA (Backend development)
+- VS Code (Frontend development)
+- Postman (API testing)
+- Docker (Containerization)
+- GitHub (Version control)
 
 ## Architecture
 
-### Kiến trúc tổng thể
+### System Architecture
 
-Hệ thống áp dụng kiến trúc phân lớp 4 tầng:
+Hệ thống áp dụng kiến trúc **3-tier layered architecture**:
 
 ```
-┌─────────────────────────────────────────┐
-│     Presentation Layer (UI/View)       │
-│  - Desktop GUI / Web Interface          │
-│  - Controllers                          │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│      Application Layer (Services)      │
-│  - Business Logic Services              │
-│  - Use Case Implementations             │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│       Domain Layer (Models)             │
-│  - Domain Entities                      │
-│  - Business Rules                       │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│   Infrastructure Layer (Data Access)    │
-│  - Repositories                         │
-│  - Database Access                      │
-│  - External Services                    │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────┐
+│     Presentation Layer              │
+│     (React Web Application)         │
+└──────────────┬──────────────────────┘
+               │ HTTP/REST API
+┌──────────────▼──────────────────────┐
+│     Application Layer               │
+│     (Spring Boot Backend)           │
+│  ┌────────────────────────────────┐ │
+│  │  Controllers (REST Endpoints)  │ │
+│  └────────────┬───────────────────┘ │
+│  ┌────────────▼───────────────────┐ │
+│  │  Services (Business Logic)     │ │
+│  └────────────┬───────────────────┘ │
+│  ┌────────────▼───────────────────┐ │
+│  │  Repositories (Data Access)    │ │
+│  └────────────┬───────────────────┘ │
+└───────────────┼─────────────────────┘
+                │ JPA/Hibernate
+┌───────────────▼─────────────────────┐
+│     Data Layer                      │
+│     (MySQL Database)                │
+└─────────────────────────────────────┘
 ```
 
-### Mô hình kiến trúc Mermaid
+### Design Patterns Applied
 
-```mermaid
-graph TB
-    subgraph "Presentation Layer"
-        UI[User Interface]
-        Controller[Controllers]
-    end
-    
-    subgraph "Application Layer"
-        AuthService[Authentication Service]
-        ProjectService[Project Service]
-        SprintService[Sprint Service]
-        TaskService[Task Service]
-        TodoService[Todo Service]
-        ReportService[Report Service]
-        NotificationService[Notification Service]
-    end
-    
-    subgraph "Domain Layer"
-        User[User Entity]
-        Project[Project Entity]
-        Sprint[Sprint Entity]
-        Task[Task Entity]
-        Todo[Todo Entity]
-        Notification[Notification Entity]
-    end
-    
-    subgraph "Infrastructure Layer"
-        UserRepo[User Repository]
-        ProjectRepo[Project Repository]
-        SprintRepo[Sprint Repository]
-        TaskRepo[Task Repository]
-        TodoRepo[Todo Repository]
-        NotificationRepo[Notification Repository]
-        DB[(Database)]
-    end
-    
-    UI --> Controller
-    Controller --> AuthService
-    Controller --> ProjectService
-    Controller --> SprintService
-    Controller --> TaskService
-    Controller --> TodoService
-    Controller --> ReportService
-    
-    AuthService --> User
-    ProjectService --> Project
-    SprintService --> Sprint
-    TaskService --> Task
-    TodoService --> Todo
-    ReportService --> Sprint
-    ReportService --> Task
-    NotificationService --> Notification
-    
-    AuthService --> UserRepo
-    ProjectService --> ProjectRepo
-    SprintService --> SprintRepo
-    TaskService --> TaskRepo
-    TaskService --> NotificationService
-    TodoService --> TodoRepo
-    NotificationService --> NotificationRepo
-    
-    UserRepo --> DB
-    ProjectRepo --> DB
-    SprintRepo --> DB
-    TaskRepo --> DB
-    TodoRepo --> DB
-    NotificationRepo --> DB
-```
-
-### Design Patterns được áp dụng
-
-1. **Repository Pattern**: Tách biệt logic truy cập dữ liệu khỏi business logic
-2. **Service Layer Pattern**: Đóng gói business logic và use cases
-3. **Factory Pattern**: Tạo các đối tượng phức tạp (Report Factory)
-4. **Observer Pattern**: Thông báo khi có thay đổi trạng thái (Notification System)
-5. **Singleton Pattern**: Quản lý kết nối database
-6. **Strategy Pattern**: Xử lý các thuật toán tính toán khác nhau (velocity, burndown)
-7. **Dependency Injection**: Giảm coupling giữa các components
+1. **MVC (Model-View-Controller)**: Tách biệt logic nghiệp vụ, dữ liệu và giao diện
+2. **Repository Pattern**: Trừu tượng hóa data access layer
+3. **Service Layer Pattern**: Đóng gói business logic
+4. **DTO (Data Transfer Object)**: Truyền dữ liệu giữa layers
+5. **Dependency Injection**: Spring IoC container quản lý dependencies
+6. **Builder Pattern**: Xây dựng objects phức tạp (cho entities)
+7. **Strategy Pattern**: Xử lý các loại notifications khác nhau
 
 ## Components and Interfaces
 
-### 1. Presentation Layer
+### Backend Components
 
-#### Controllers
+#### 1. Domain Models (Entities)
 
-**AuthenticationController**
+**User Entity**
 ```java
-public class AuthenticationController {
-    private AuthenticationService authService;
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     
-    public Response register(RegisterRequest request);
-    public Response login(LoginRequest request);
-    public Response logout(String sessionToken);
-    public Response requestPasswordReset(String email);
-}
-```
-
-**ProjectController**
-```java
-public class ProjectController {
-    private ProjectService projectService;
+    @Column(unique = true, nullable = false)
+    private String username;
     
-    public Response createProject(CreateProjectRequest request);
-    public Response getProjects(String userId);
-    public Response updateProject(String projectId, UpdateProjectRequest request);
-    public Response deleteProject(String projectId);
-    public Response addMember(String projectId, String userId);
-}
-```
-
-**SprintController**
-```java
-public class SprintController {
-    private SprintService sprintService;
+    @Column(unique = true, nullable = false)
+    private String email;
     
-    public Response createSprint(CreateSprintRequest request);
-    public Response getSprints(String projectId);
-    public Response updateSprint(String sprintId, UpdateSprintRequest request);
-    public Response deleteSprint(String sprintId);
-    public Response getSprintProgress(String sprintId);
-}
-```
-
-**TaskController**
-```java
-public class TaskController {
-    private TaskService taskService;
+    @Column(nullable = false)
+    private String password; // Encrypted
     
-    public Response createTask(CreateTaskRequest request);
-    public Response assignTask(String taskId, String userId);
-    public Response updateTaskStatus(String taskId, TaskStatus status);
-    public Response updateTask(String taskId, UpdateTaskRequest request);
-    public Response deleteTask(String taskId);
-    public Response searchTasks(SearchCriteria criteria);
+    @Enumerated(EnumType.STRING)
+    private UserRole role; // MEMBER, PROJECT_MANAGER
+    
+    @OneToMany(mappedBy = "assignee")
+    private List<Task> assignedTasks;
+    
+    @ManyToMany(mappedBy = "members")
+    private List<Project> projects;
 }
 ```
 
-### 2. Application Layer (Services)
-
-**AuthenticationService**
+**Project Entity**
 ```java
-public interface AuthenticationService {
-    User register(String username, String email, String password) throws ValidationException;
-    Session login(String email, String password) throws AuthenticationException;
-    void logout(String sessionToken);
-    void requestPasswordReset(String email);
-    String hashPassword(String password);
-    boolean verifyPassword(String password, String hashedPassword);
+@Entity
+@Table(name = "projects")
+public class Project {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
+    private String name;
+    
+    @Column(length = 1000)
+    private String description;
+    
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private User manager;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "project_members",
+        joinColumns = @JoinColumn(name = "project_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> members;
+    
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private List<Sprint> sprints;
+    
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private List<Task> tasks;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
 }
 ```
+
+**Sprint Entity**
+```java
+@Entity
+@Table(name = "sprints")
+public class Sprint {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
+    private String name;
+    
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
+    
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
+    
+    @Temporal(TemporalType.DATE)
+    private Date endDate;
+    
+    @Enumerated(EnumType.STRING)
+    private SprintStatus status; // PLANNED, ACTIVE, COMPLETED
+    
+    @OneToMany(mappedBy = "sprint")
+    private List<Task> tasks;
+}
+```
+
+**Task Entity**
+```java
+@Entity
+@Table(name = "tasks")
+public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
+    private String title;
+    
+    @Column(length = 2000)
+    private String description;
+    
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status; // TODO, IN_PROGRESS, DONE, BLOCKED
+    
+    @Enumerated(EnumType.STRING)
+    private TaskPriority priority; // LOW, MEDIUM, HIGH, CRITICAL
+    
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
+    
+    @ManyToOne
+    @JoinColumn(name = "sprint_id")
+    private Sprint sprint;
+    
+    @ManyToOne
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
+    
+    @Temporal(TemporalType.DATE)
+    private Date dueDate;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+}
+```
+
+**Notification Entity**
+```java
+@Entity
+@Table(name = "notifications")
+public class Notification {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    
+    @Column(nullable = false)
+    private String message;
+    
+    @Enumerated(EnumType.STRING)
+    private NotificationType type; // TASK_ASSIGNED, DEADLINE_REMINDER, STATUS_CHANGED
+    
+    private boolean isRead;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+}
+```
+
+#### 2. Repository Interfaces
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
+}
+
+public interface ProjectRepository extends JpaRepository<Project, Long> {
+    List<Project> findByManagerId(Long managerId);
+    List<Project> findByMembersContaining(User user);
+}
+
+public interface SprintRepository extends JpaRepository<Sprint, Long> {
+    List<Sprint> findByProjectId(Long projectId);
+    List<Sprint> findByProjectIdAndStatus(Long projectId, SprintStatus status);
+}
+
+public interface TaskRepository extends JpaRepository<Task, Long> {
+    List<Task> findByProjectId(Long projectId);
+    List<Task> findBySprintId(Long sprintId);
+    List<Task> findByAssigneeId(Long assigneeId);
+    List<Task> findByStatus(TaskStatus status);
+    List<Task> findByAssigneeIdAndStatus(Long assigneeId, TaskStatus status);
+}
+
+public interface NotificationRepository extends JpaRepository<Notification, Long> {
+    List<Notification> findByUserIdAndIsReadFalse(Long userId);
+    List<Notification> findByUserIdOrderByCreatedAtDesc(Long userId);
+}
+```
+
+#### 3. Service Layer
+
+**UserService**
+- registerUser(UserDTO): User
+- authenticateUser(String username, String password): AuthToken
+- getUserById(Long id): User
+- updateUser(Long id, UserDTO): User
 
 **ProjectService**
-```java
-public interface ProjectService {
-    Project createProject(String name, String description, String creatorId) throws ValidationException;
-    List<Project> getProjectsByUser(String userId);
-    Project updateProject(String projectId, String name, String description) throws NotFoundException;
-    void deleteProject(String projectId) throws NotFoundException;
-    void addMember(String projectId, String userId) throws NotFoundException;
-    boolean hasAccess(String userId, String projectId);
-}
-```
+- createProject(ProjectDTO): Project
+- updateProject(Long id, ProjectDTO): Project
+- deleteProject(Long id): void
+- getProjectById(Long id): Project
+- getProjectsByUser(Long userId): List<Project>
+- addMemberToProject(Long projectId, Long userId): void
+- removeMemberFromProject(Long projectId, Long userId): void
 
 **SprintService**
-```java
-public interface SprintService {
-    Sprint createSprint(String projectId, String name, LocalDate startDate, LocalDate endDate) 
-        throws ValidationException;
-    List<Sprint> getSprintsByProject(String projectId);
-    Sprint updateSprint(String sprintId, String name, LocalDate startDate, LocalDate endDate) 
-        throws ValidationException;
-    void deleteSprint(String sprintId) throws NotFoundException;
-    SprintProgress getSprintProgress(String sprintId);
-    void autoCompleteExpiredSprints();
-}
-```
+- createSprint(SprintDTO): Sprint
+- updateSprint(Long id, SprintDTO): Sprint
+- getSprintById(Long id): Sprint
+- getSprintsByProject(Long projectId): List<Sprint>
+- completeSprint(Long id): SprintReport
 
 **TaskService**
-```java
-public interface TaskService {
-    Task createTask(String projectId, String title, String description, Priority priority, 
-        int estimatedHours) throws ValidationException;
-    Task assignTask(String taskId, String userId) throws NotFoundException;
-    Task updateTaskStatus(String taskId, TaskStatus newStatus, String userId, String blockingReason) 
-        throws PermissionException;
-    Task updateTask(String taskId, UpdateTaskRequest request) throws NotFoundException;
-    void deleteTask(String taskId) throws NotFoundException;
-    void addTaskToSprint(String taskId, String sprintId) throws NotFoundException;
-    List<Task> searchTasks(SearchCriteria criteria);
-    List<Task> getTasksByUser(String userId);
-}
-```
-
-**TodoService**
-```java
-public interface TodoService {
-    Todo createTodo(String userId, String title, LocalDate dueDate);
-    List<Todo> getTodosByUser(String userId);
-    Todo markAsCompleted(String todoId) throws NotFoundException;
-    void deleteTodo(String todoId) throws NotFoundException;
-    List<Todo> getOverdueTodos(String userId);
-}
-```
-
-**ReportService**
-```java
-public interface ReportService {
-    SprintReport generateSprintReport(String sprintId);
-    byte[] exportReportToPDF(SprintReport report);
-    double calculateTeamVelocity(String sprintId);
-    Map<String, Integer> getMemberContributions(String sprintId);
-    List<DataPoint> generateBurndownChart(String sprintId);
-}
-```
+- createTask(TaskDTO): Task
+- updateTask(Long id, TaskDTO): Task
+- deleteTask(Long id): void
+- getTaskById(Long id): Task
+- getTasksByProject(Long projectId): List<Task>
+- getTasksByAssignee(Long assigneeId): List<Task>
+- assignTask(Long taskId, Long userId): Task
+- updateTaskStatus(Long taskId, TaskStatus status): Task
+- searchTasks(SearchCriteria): List<Task>
 
 **NotificationService**
-```java
-public interface NotificationService {
-    void notifyTaskAssignment(String userId, String taskId);
-    void notifyStatusChange(String taskId, TaskStatus oldStatus, TaskStatus newStatus);
-    List<Notification> getUnreadNotifications(String userId);
-    void markAsRead(String notificationId);
-}
-```
+- createNotification(NotificationDTO): Notification
+- getUnreadNotifications(Long userId): List<Notification>
+- markAsRead(Long notificationId): void
+- sendTaskAssignmentNotification(Task task): void
+- sendDeadlineReminder(Task task): void
 
-### 3. Domain Layer (Entities)
+**ReportService**
+- generateSprintReport(Long sprintId): SprintReport
+- getProjectProgress(Long projectId): ProgressMetrics
+- getSprintProgress(Long sprintId): ProgressMetrics
+- exportReportToPDF(SprintReport): byte[]
 
-**User**
-```java
-public class User {
-    private String id;
-    private String username;
-    private String email;
-    private String passwordHash;
-    private Role role;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastLogin;
-    
-    // Business methods
-    public boolean hasRole(Role role);
-    public void updateLastLogin();
-}
-```
+#### 4. REST Controllers
 
-**Project**
-```java
-public class Project {
-    private String id;
-    private String name;
-    private String description;
-    private String creatorId;
-    private List<String> memberIds;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    
-    // Business methods
-    public void addMember(String userId);
-    public void removeMember(String userId);
-    public boolean hasMember(String userId);
-}
-```
+**AuthController**
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/logout
 
-**Sprint**
-```java
-public class Sprint {
-    private String id;
-    private String projectId;
-    private String name;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private SprintStatus status;
-    private List<String> taskIds;
-    
-    // Business methods
-    public boolean isActive();
-    public boolean isExpired();
-    public void addTask(String taskId);
-    public void removeTask(String taskId);
-    public int getDurationInDays();
-}
-```
+**ProjectController**
+- POST /api/projects
+- GET /api/projects/{id}
+- PUT /api/projects/{id}
+- DELETE /api/projects/{id}
+- GET /api/projects/user/{userId}
+- POST /api/projects/{id}/members/{userId}
+- DELETE /api/projects/{id}/members/{userId}
 
-**Task**
-```java
-public class Task {
-    private String id;
-    private String projectId;
-    private String sprintId;
-    private String title;
-    private String description;
-    private Priority priority;
-    private TaskStatus status;
-    private String assigneeId;
-    private int estimatedHours;
-    private int actualHours;
-    private String blockingReason;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime startedAt;
-    private LocalDateTime completedAt;
-    
-    // Business methods
-    public void updateStatus(TaskStatus newStatus);
-    public void addActualHours(int hours);
-    public int getRemainingHours();
-    public boolean isOverdue();
-    public boolean isBlocked();
-}
-```
+**SprintController**
+- POST /api/sprints
+- GET /api/sprints/{id}
+- PUT /api/sprints/{id}
+- GET /api/projects/{projectId}/sprints
+- POST /api/sprints/{id}/complete
 
-**Todo**
-```java
-public class Todo {
-    private String id;
-    private String userId;
-    private String title;
-    private LocalDate dueDate;
-    private boolean completed;
-    private LocalDateTime createdAt;
-    private LocalDateTime completedAt;
-    
-    // Business methods
-    public void markAsCompleted();
-    public boolean isOverdue();
-}
-```
+**TaskController**
+- POST /api/tasks
+- GET /api/tasks/{id}
+- PUT /api/tasks/{id}
+- DELETE /api/tasks/{id}
+- GET /api/projects/{projectId}/tasks
+- GET /api/users/{userId}/tasks
+- PUT /api/tasks/{id}/assign/{userId}
+- PUT /api/tasks/{id}/status
+- GET /api/tasks/search
 
-**Notification**
-```java
-public class Notification {
-    private String id;
-    private String userId;
-    private String message;
-    private NotificationType type;
-    private boolean read;
-    private LocalDateTime createdAt;
-    
-    // Business methods
-    public void markAsRead();
-}
-```
+**NotificationController**
+- GET /api/notifications/user/{userId}
+- GET /api/notifications/unread/{userId}
+- PUT /api/notifications/{id}/read
 
-### 4. Infrastructure Layer (Repositories)
+**ReportController**
+- GET /api/reports/sprint/{sprintId}
+- GET /api/reports/project/{projectId}/progress
+- GET /api/reports/sprint/{sprintId}/export
 
-**IRepository<T>** (Generic Interface)
-```java
-public interface IRepository<T> {
-    T save(T entity);
-    T findById(String id);
-    List<T> findAll();
-    void delete(String id);
-    void update(T entity);
-}
-```
+### Frontend Components (React Web)
 
-**IUserRepository**
-```java
-public interface IUserRepository extends IRepository<User> {
-    User findByEmail(String email);
-    User findByUsername(String username);
-    List<User> findByRole(Role role);
-}
-```
+#### Page Components
+- LoginPage
+- RegisterPage
+- DashboardPage
+- ProjectListPage
+- ProjectDetailPage
+- SprintListPage
+- SprintDetailPage
+- TaskListPage
+- TaskDetailPage
+- CreateTaskPage
+- NotificationPage
+- ReportPage
 
-**IProjectRepository**
-```java
-public interface IProjectRepository extends IRepository<Project> {
-    List<Project> findByCreator(String creatorId);
-    List<Project> findByMember(String userId);
-}
-```
-
-**ISprintRepository**
-```java
-public interface ISprintRepository extends IRepository<Sprint> {
-    List<Sprint> findByProject(String projectId);
-    List<Sprint> findActiveSprints();
-    List<Sprint> findExpiredSprints();
-}
-```
-
-**ITaskRepository**
-```java
-public interface ITaskRepository extends IRepository<Task> {
-    List<Task> findByProject(String projectId);
-    List<Task> findBySprint(String sprintId);
-    List<Task> findByAssignee(String userId);
-    List<Task> findByStatus(TaskStatus status);
-    List<Task> search(SearchCriteria criteria);
-}
-```
+#### Reusable Components
+- TaskCard
+- ProjectCard
+- SprintCard
+- ProgressBar
+- StatusBadge
+- PriorityBadge
+- NotificationItem
+- FilterPanel
+- SearchBar
+- Navbar
+- Sidebar
+- Modal (for create/edit forms)
 
 ## Data Models
 
+### Entity Relationship Diagram
+
+```
+┌─────────────┐         ┌──────────────┐
+│    User     │────────<│   Project    │
+│             │ manages │              │
+└──────┬──────┘         └───────┬──────┘
+       │                        │
+       │ assigned to            │ contains
+       │                        │
+       ▼                        ▼
+┌─────────────┐         ┌──────────────┐
+│    Task     │────────<│    Sprint    │
+│             │ part of │              │
+└─────────────┘         └──────────────┘
+
+┌─────────────┐
+│Notification │
+│             │
+└──────┬──────┘
+       │ sent to
+       ▼
+┌─────────────┐
+│    User     │
+└─────────────┘
+```
+
 ### Database Schema
 
-```mermaid
-erDiagram
-    USER ||--o{ PROJECT_MEMBER : "belongs to"
-    USER ||--o{ TODO : "owns"
-    USER ||--o{ NOTIFICATION : "receives"
-    USER ||--o{ TASK : "assigned to"
-    
-    PROJECT ||--o{ PROJECT_MEMBER : "has"
-    PROJECT ||--o{ SPRINT : "contains"
-    PROJECT ||--o{ TASK : "contains"
-    
-    SPRINT ||--o{ TASK : "includes"
-    
-    USER {
-        string id PK
-        string username
-        string email
-        string password_hash
-        string role
-        datetime created_at
-        datetime last_login
-    }
-    
-    PROJECT {
-        string id PK
-        string name
-        string description
-        string creator_id FK
-        datetime created_at
-        datetime updated_at
-    }
-    
-    PROJECT_MEMBER {
-        string project_id FK
-        string user_id FK
-        datetime joined_at
-    }
-    
-    SPRINT {
-        string id PK
-        string project_id FK
-        string name
-        date start_date
-        date end_date
-        string status
-        datetime created_at
-    }
-    
-    TASK {
-        string id PK
-        string project_id FK
-        string sprint_id FK
-        string title
-        string description
-        string priority
-        string status
-        string assignee_id FK
-        int estimated_hours
-        int actual_hours
-        string blocking_reason
-        datetime created_at
-        datetime updated_at
-        datetime started_at
-        datetime completed_at
-    }
-    
-    TODO {
-        string id PK
-        string user_id FK
-        string title
-        date due_date
-        boolean completed
-        datetime created_at
-        datetime completed_at
-    }
-    
-    NOTIFICATION {
-        string id PK
-        string user_id FK
-        string message
-        string type
-        boolean read
-        datetime created_at
-    }
-```
+**users**
+- id (PK, BIGINT, AUTO_INCREMENT)
+- username (VARCHAR(50), UNIQUE, NOT NULL)
+- email (VARCHAR(100), UNIQUE, NOT NULL)
+- password (VARCHAR(255), NOT NULL)
+- role (ENUM: MEMBER, PROJECT_MANAGER)
+- created_at (TIMESTAMP)
 
-### Enumerations
+**projects**
+- id (PK, BIGINT, AUTO_INCREMENT)
+- name (VARCHAR(200), NOT NULL)
+- description (TEXT)
+- manager_id (FK → users.id)
+- created_at (TIMESTAMP)
 
-**Role**
+**project_members** (Join Table)
+- project_id (FK → projects.id)
+- user_id (FK → users.id)
+- PRIMARY KEY (project_id, user_id)
+
+**sprints**
+- id (PK, BIGINT, AUTO_INCREMENT)
+- name (VARCHAR(200), NOT NULL)
+- project_id (FK → projects.id)
+- start_date (DATE)
+- end_date (DATE)
+- status (ENUM: PLANNED, ACTIVE, COMPLETED)
+- created_at (TIMESTAMP)
+
+**tasks**
+- id (PK, BIGINT, AUTO_INCREMENT)
+- title (VARCHAR(200), NOT NULL)
+- description (TEXT)
+- status (ENUM: TODO, IN_PROGRESS, DONE, BLOCKED)
+- priority (ENUM: LOW, MEDIUM, HIGH, CRITICAL)
+- project_id (FK → projects.id)
+- sprint_id (FK → sprints.id, NULLABLE)
+- assignee_id (FK → users.id, NULLABLE)
+- due_date (DATE)
+- created_at (TIMESTAMP)
+- updated_at (TIMESTAMP)
+
+**notifications**
+- id (PK, BIGINT, AUTO_INCREMENT)
+- user_id (FK → users.id)
+- message (VARCHAR(500), NOT NULL)
+- type (ENUM: TASK_ASSIGNED, DEADLINE_REMINDER, STATUS_CHANGED)
+- is_read (BOOLEAN, DEFAULT FALSE)
+- created_at (TIMESTAMP)
+
+### DTOs (Data Transfer Objects)
+
+**UserDTO**
 ```java
-public enum Role {
-    ADMIN,
-    PROJECT_MANAGER,
-    TEAM_MEMBER
+public class UserDTO {
+    private String username;
+    private String email;
+    private String password;
+    private UserRole role;
 }
 ```
 
-**TaskStatus**
+**ProjectDTO**
 ```java
-public enum TaskStatus {
-    TODO,
-    IN_PROGRESS,
-    DONE,
-    BLOCKED
+public class ProjectDTO {
+    private String name;
+    private String description;
+    private Long managerId;
+    private List<Long> memberIds;
 }
 ```
 
-**Priority**
+**TaskDTO**
 ```java
-public enum Priority {
-    LOW,
-    MEDIUM,
-    HIGH,
-    CRITICAL
+public class TaskDTO {
+    private String title;
+    private String description;
+    private TaskStatus status;
+    private TaskPriority priority;
+    private Long projectId;
+    private Long sprintId;
+    private Long assigneeId;
+    private Date dueDate;
 }
 ```
 
-**SprintStatus**
+**SprintDTO**
 ```java
-public enum SprintStatus {
-    PLANNED,
-    ACTIVE,
-    COMPLETED
+public class SprintDTO {
+    private String name;
+    private Long projectId;
+    private Date startDate;
+    private Date endDate;
 }
 ```
 
-**NotificationType**
-```java
-public enum NotificationType {
-    TASK_ASSIGNED,
-    STATUS_CHANGED,
-    SPRINT_STARTED,
-    SPRINT_COMPLETED,
-    DEADLINE_APPROACHING
-}
-```
 
 ## Correctness Properties
 
-
 *A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
 
-### Authentication and User Management Properties
 
-**Property 1: User registration creates valid accounts**
-*For any* valid registration data (username, email, password), creating a user account should result in a stored user with encrypted password that can be retrieved by ID or email.
-**Validates: Requirements 1.1, 1.5**
+### Property Reflection
 
-**Property 2: Authentication round-trip**
-*For any* registered user, logging in with the correct credentials should succeed and grant access, while logging in with incorrect credentials should fail.
-**Validates: Requirements 1.2, 1.3**
+Sau khi phân tích 50 acceptance criteria, tôi đã xác định được 45 properties có thể kiểm thử. Tuy nhiên, một số properties có thể được gộp lại để tránh trùng lặp:
 
-**Property 3: Password encryption invariant**
-*For any* user in the system, the stored password should never equal the plaintext password (all passwords must be encrypted).
-**Validates: Requirements 1.5**
+**Redundancies identified:**
+- Properties về filtering (8.2, 8.3, 8.4) có thể được gộp vào property tổng quát về filtering (8.5)
+- Properties về notification creation (9.1, 9.3) có thể được gộp thành một property về notification triggering
+- Properties về task retrieval (4.5, 5.4) có thể được gộp vào property về data completeness
 
-**Property 4: Password reset generates valid tokens**
-*For any* registered user email, requesting password reset should generate a reset token and associate it with that user.
+**Consolidated properties:** Sau khi loại bỏ redundancy, chúng ta có khoảng 38 unique properties cần implement.
+
+### User Management Properties
+
+**Property 1: User registration creates unique accounts**
+*For any* valid registration data (unique username, valid email, password), creating a user account should result in a new user with a unique identifier and all provided information correctly stored.
+**Validates: Requirements 1.1**
+
+**Property 2: Valid credentials authenticate successfully**
+*For any* user account in the system, providing correct username and password should result in successful authentication and access token generation.
+**Validates: Requirements 1.2**
+
+**Property 3: Invalid credentials are rejected**
+*For any* invalid credential combination (wrong password, non-existent username, or empty fields), authentication attempts should be rejected with appropriate error messages.
+**Validates: Requirements 1.3**
+
+**Property 4: Logout invalidates session**
+*For any* authenticated user session, logging out should invalidate the session token and prevent access to protected resources without re-authentication.
 **Validates: Requirements 1.4**
+
+**Property 5: Passwords are encrypted**
+*For any* user account, the stored password in the database should never match the plain text password (must be hashed/encrypted).
+**Validates: Requirements 1.5**
 
 ### Project Management Properties
 
-**Property 5: Project creation and association**
-*For any* valid project data (name, description) and creator, creating a project should store it and associate it with the creator as both owner and member.
+**Property 6: Project creation assigns manager**
+*For any* valid project data, creating a project should result in a new project with unique identifier and the creator set as project manager.
 **Validates: Requirements 2.1**
 
-**Property 6: Project access control**
-*For any* user, viewing the project list should return exactly the projects where the user is a member or creator, and no others.
+**Property 7: Project updates are persisted**
+*For any* existing project, updating its information should result in the changes being saved and retrievable in subsequent queries.
 **Validates: Requirements 2.2**
 
-**Property 7: Project update preserves identity**
-*For any* project and valid update data, updating the project should preserve the project ID and creator while changing only the specified fields and updating the timestamp.
+**Property 8: Project deletion cascades to tasks**
+*For any* project with associated tasks, deleting the project should also remove all tasks belonging to that project from the database.
 **Validates: Requirements 2.3**
 
-**Property 8: Project deletion cascades**
-*For any* project with associated sprints and tasks, deleting the project should remove the project and all its sprints and tasks from the system.
+**Property 9: Project list filtered by access**
+*For any* user, retrieving their project list should return exactly the projects where they are either the manager or a member, and no others.
 **Validates: Requirements 2.4**
 
-**Property 9: Member addition grants access**
-*For any* project and user, after adding the user as a member, that user should appear in the project's member list and have access to view the project.
+**Property 10: Adding members grants access**
+*For any* project and user, adding the user as a project member should allow that user to view and access the project and its tasks.
 **Validates: Requirements 2.5**
 
 ### Sprint Management Properties
 
-**Property 10: Sprint date validation**
-*For any* sprint creation with start date after end date, the system should reject the creation with a validation error.
+**Property 11: Sprint creation associates with project**
+*For any* valid sprint data with project reference, creating a sprint should result in a new sprint correctly associated with the specified project.
 **Validates: Requirements 3.1**
 
-**Property 11: Sprint ordering invariant**
-*For any* project with multiple sprints, retrieving the sprints should always return them ordered by start date (earliest first).
+**Property 12: Task assignment to sprint creates association**
+*For any* task and sprint within the same project, assigning the task to the sprint should create the association and the task should appear in sprint queries.
 **Validates: Requirements 3.2**
 
-**Property 12: Sprint update validation**
-*For any* sprint and update with valid dates, the update should succeed and preserve the sprint ID while updating the specified fields.
-**Validates: Requirements 3.3**
+**Property 13: Sprint retrieval includes all tasks**
+*For any* sprint, retrieving sprint details should return all tasks assigned to that sprint with their current status information.
+**Validates: Requirements 3.4**
 
-**Property 13: Sprint deletion preserves tasks**
-*For any* sprint with associated tasks, deleting the sprint should move all tasks back to the project backlog (sprint_id becomes null) without deleting the tasks.
+**Property 14: Sprint dates do not overlap**
+*For any* two sprints within the same project, their date ranges (start to end) should not overlap, and attempting to create overlapping sprints should be rejected.
 **Validates: Requirements 3.5**
 
 ### Task Management Properties
 
-**Property 14: Task creation adds to backlog**
-*For any* valid task data (title, description, priority, estimated hours), creating a task should add it to the project backlog with status "TODO" and null sprint_id.
+**Property 15: New tasks have TODO status**
+*For any* valid task data, creating a task should result in a new task with initial status set to TODO regardless of other provided fields.
 **Validates: Requirements 4.1**
 
-**Property 15: Task assignment creates notification**
-*For any* task and team member, assigning the task should update the assignee field and create a notification for that team member.
+**Property 16: Task updates modify timestamp**
+*For any* existing task, updating any task information should save the changes and update the updatedAt timestamp to be later than the previous value.
 **Validates: Requirements 4.2**
 
-**Property 16: Task-sprint association**
-*For any* task in backlog and sprint in the same project, adding the task to the sprint should update the task's sprint_id to reference that sprint.
+**Property 17: Status changes are persisted**
+*For any* task and valid status value, changing the task status should result in the new status being saved and retrievable in subsequent queries.
 **Validates: Requirements 4.3**
 
-**Property 17: Task update preserves identity**
-*For any* task and valid update data, updating the task should preserve the task ID while updating specified fields and the modification timestamp.
+**Property 18: Task deletion removes from database**
+*For any* existing task, deleting it should result in the task no longer being retrievable from the database.
 **Validates: Requirements 4.4**
 
-**Property 18: Task deletion removes from system**
-*For any* task, after deletion, attempting to retrieve the task by ID should return null or throw NotFoundException.
+**Property 19: Task retrieval includes complete data**
+*For any* task, retrieving it should return all fields including title, description, assignee, priority, status, due date, and timestamps.
 **Validates: Requirements 4.5**
 
-### Task Status Properties
+### Task Assignment Properties
 
-**Property 19: Status transition to In Progress records start time**
-*For any* task with status "TODO", changing status to "IN_PROGRESS" should update the status and set started_at to the current timestamp.
+**Property 20: Task assignment sets assignee and notifies**
+*For any* task and project member, assigning the task should set the member as assignee and create a notification for that member.
 **Validates: Requirements 5.1**
 
-**Property 20: Status transition to Done records completion time**
-*For any* task, changing status to "DONE" should update the status and set completed_at to the current timestamp.
+**Property 21: Assignment validates project membership**
+*For any* task assignment attempt, if the assignee is not a member of the task's project, the assignment should be rejected with an error.
 **Validates: Requirements 5.2**
 
-**Property 21: Blocked status requires reason**
-*For any* task, changing status to "BLOCKED" without providing a blocking reason should be rejected with a validation error.
+**Property 22: Reassignment updates and notifies both parties**
+*For any* task with an existing assignee, reassigning to a different member should update the assignee and create notifications for both the old and new assignees.
 **Validates: Requirements 5.3**
 
-**Property 22: Remaining hours calculation**
-*For any* task, the remaining hours should always equal (estimated_hours - actual_hours), and should be recalculated when actual hours are updated.
+**Property 23: User task list filtered by assignee**
+*For any* user, retrieving their assigned tasks should return exactly the tasks where they are the assignee, and no others.
 **Validates: Requirements 5.4**
 
-**Property 23: Status change authorization**
-*For any* task and user, if the user is not the assignee, attempting to change the task status should be rejected with a permission error.
+**Property 24: Member removal unassigns tasks**
+*For any* project member with assigned tasks, removing them from the project should clear the assignee field on all their tasks in that project.
 **Validates: Requirements 5.5**
 
-### Todo Management Properties
+### Progress Tracking Properties
 
-**Property 24: Todo creation and association**
-*For any* valid todo data (title, optional due date) and user, creating a todo should store it and associate it with that user.
+**Property 25: Completion percentage calculated correctly**
+*For any* project, the completion percentage should equal (number of DONE tasks / total tasks) × 100, rounded appropriately.
 **Validates: Requirements 6.1**
 
-**Property 25: Todo ordering invariant**
-*For any* user with multiple todos, retrieving the todo list should return todos ordered by due date (earliest first), with null due dates last.
+**Property 26: Status distribution calculated correctly**
+*For any* sprint, the task distribution by status should accurately count tasks in each status (TODO, IN_PROGRESS, DONE, BLOCKED).
 **Validates: Requirements 6.2**
 
-**Property 26: Todo completion records timestamp**
-*For any* todo, marking it as completed should set completed to true and set completed_at to the current timestamp.
+**Property 27: Progress metrics reflect current state**
+*For any* task status change, immediately querying progress metrics should reflect the updated status in calculations.
 **Validates: Requirements 6.3**
 
-**Property 27: Todo deletion removes from system**
-*For any* todo, after deletion, attempting to retrieve it should return null or throw NotFoundException.
-**Validates: Requirements 6.4**
-
-**Property 28: Overdue todo identification**
-*For any* todo with due date before current date and completed = false, the system should identify it as overdue.
+**Property 28: Velocity calculated from completed tasks**
+*For any* sprint, the velocity metric should equal the count of tasks with status DONE in that sprint.
 **Validates: Requirements 6.5**
 
-### Sprint Progress Properties
+### Sprint Reporting Properties
 
-**Property 29: Task status aggregation**
-*For any* sprint, the count of tasks in each status category should equal the total number of tasks when summed.
+**Property 29: Sprint report contains required sections**
+*For any* sprint, generating a report should produce a report object containing sprint summary, list of completed tasks, and team performance metrics.
 **Validates: Requirements 7.1**
 
-**Property 30: Completion percentage calculation**
-*For any* sprint, the completion percentage should equal (count of DONE tasks / total tasks) * 100.
+**Property 30: Report includes all metrics**
+*For any* generated sprint report, it should include task completion rate, velocity, and burndown chart data fields.
 **Validates: Requirements 7.2**
 
-**Property 31: Hours aggregation**
-*For any* sprint, the total estimated hours should equal the sum of estimated_hours of all tasks, and total actual hours should equal the sum of actual_hours.
+**Property 31: Sprint completion triggers report generation**
+*For any* sprint, when its status changes to COMPLETED, a final sprint report should be automatically generated and stored.
 **Validates: Requirements 7.3**
 
-**Property 32: Burndown chart data consistency**
-*For any* sprint, the burndown chart data points should show monotonically decreasing or equal remaining work over time.
+**Property 32: Historical reports are retrievable**
+*For any* project with completed sprints, retrieving historical reports should return reports for all completed sprints in that project.
 **Validates: Requirements 7.4**
 
-**Property 33: Blocked task identification**
-*For any* sprint, all tasks with status "BLOCKED" should be identified and included in the blocked tasks list.
+**Property 33: Reports are exportable**
+*For any* sprint report, exporting it should produce valid PDF or CSV file content that can be saved.
 **Validates: Requirements 7.5**
-
-### Sprint Report Properties
-
-**Property 34: Report includes completed tasks**
-*For any* sprint, the generated report should include all tasks with status "DONE" along with their actual hours.
-**Validates: Requirements 8.1**
-
-**Property 35: Report includes incomplete tasks**
-*For any* sprint, the generated report should include all tasks with status not equal to "DONE".
-**Validates: Requirements 8.2**
-
-**Property 36: Velocity calculation**
-*For any* sprint, the team velocity should equal the sum of actual hours (or story points) of all completed tasks.
-**Validates: Requirements 8.3**
-
-**Property 37: Member contribution aggregation**
-*For any* sprint, each team member's contribution should equal the sum of actual hours of tasks assigned to them and marked as DONE.
-**Validates: Requirements 8.4**
-
-**Property 38: PDF export contains report data**
-*For any* sprint report, exporting to PDF should produce a valid PDF file that contains the report's key data (completed tasks, velocity, contributions).
-**Validates: Requirements 8.5**
-
-### Dashboard and Notification Properties
-
-**Property 39: Dashboard task filtering**
-*For any* user, the dashboard should display exactly the tasks assigned to that user, grouped by status.
-**Validates: Requirements 9.1**
-
-**Property 40: Upcoming deadline identification**
-*For any* user, the dashboard should display tasks and todos with due dates within the next 7 days.
-**Validates: Requirements 9.2**
-
-**Property 41: Assignment notification creation**
-*For any* task assignment, a notification of type TASK_ASSIGNED should be created for the assignee.
-**Validates: Requirements 9.3**
-
-**Property 42: Status change notification**
-*For any* task status change, notifications should be created for both the project manager and the assigned team member.
-**Validates: Requirements 9.4**
-
-**Property 43: Notification ordering**
-*For any* user, retrieving unread notifications should return them ordered by creation time (most recent first).
-**Validates: Requirements 9.5**
 
 ### Search and Filter Properties
 
-**Property 44: Search across multiple fields**
-*For any* search query, the results should include all projects, tasks, and todos where the query appears in name/title or description.
+**Property 34: Keyword search matches title and description**
+*For any* search query string, the results should include all tasks where the query appears in either the title or description (case-insensitive).
+**Validates: Requirements 8.1**
+
+**Property 35: Multiple filters use AND logic**
+*For any* combination of filters (status, priority, assignee), the results should include only tasks that match ALL applied filter criteria simultaneously.
+**Validates: Requirements 8.2, 8.3, 8.4, 8.5**
+
+### Notification Properties
+
+**Property 36: Task events trigger notifications**
+*For any* task assignment or status change by another user, a notification should be created for the task assignee with appropriate message and type.
+**Validates: Requirements 9.1, 9.3**
+
+**Property 37: Unread notifications are retrievable**
+*For any* user, retrieving unread notifications should return all notifications where isRead is false, with complete timestamp and message information.
+**Validates: Requirements 9.4**
+
+**Property 38: Marking notification as read updates status**
+*For any* notification, marking it as read should change its isRead field from false to true and persist the change.
+**Validates: Requirements 9.5**
+
+### Dashboard Properties
+
+**Property 39: Dashboard groups tasks by status**
+*For any* user, the dashboard should display their assigned tasks correctly grouped by status (TODO, IN_PROGRESS, DONE, BLOCKED).
 **Validates: Requirements 10.1**
 
-**Property 45: Status filter correctness**
-*For any* status filter value, the filtered results should include only tasks with that exact status.
+**Property 40: Dashboard identifies deadline tasks**
+*For any* user, the dashboard should correctly identify and display tasks with due dates in the future (upcoming) and in the past (overdue).
 **Validates: Requirements 10.2**
 
-**Property 46: Priority filter correctness**
-*For any* priority filter value, the filtered results should include only tasks with that exact priority.
+**Property 41: Dashboard shows active projects and sprints**
+*For any* user, the dashboard should display all projects they are members of and the currently active sprints in those projects.
 **Validates: Requirements 10.3**
 
-**Property 47: Assignee filter correctness**
-*For any* assignee filter value, the filtered results should include only tasks assigned to that user.
+**Property 42: Dashboard displays recent activity**
+*For any* user, the dashboard should show recent activities (task creations, status changes, assignments) related to their projects, ordered by timestamp.
 **Validates: Requirements 10.4**
 
-**Property 48: Multiple filter conjunction**
-*For any* combination of filters (status, priority, assignee), the results should include only tasks matching ALL filter criteria (AND logic).
-**Validates: Requirements 10.5**
-
-### Security and Authorization Properties
-
-**Property 49: Role-based access control**
-*For any* user with a specific role, the system should grant or deny access to operations based on that role's permissions.
-**Validates: Requirements 12.1**
-
-**Property 50: Project access authorization**
-*For any* user and project, if the user is not a member of the project, access should be denied with an authorization error.
-**Validates: Requirements 12.2**
-
-**Property 51: Task modification authorization**
-*For any* user and task, if the user does not have permission (not assignee or project manager), modification should be denied.
-**Validates: Requirements 12.3**
-
-**Property 52: Security event logging**
-*For any* security-related event (login attempt, permission change), a log entry should be created with timestamp, user, and event details.
-**Validates: Requirements 12.4**
 
 ## Error Handling
 
 ### Exception Hierarchy
 
 ```java
-public class ApplicationException extends Exception {
+// Base exception
+public class TaskManagementException extends RuntimeException {
     private String errorCode;
-    private String message;
+    private HttpStatus httpStatus;
 }
 
-public class ValidationException extends ApplicationException {
-    // For invalid input data
+// Specific exceptions
+public class ResourceNotFoundException extends TaskManagementException {
+    // For entities not found (404)
 }
 
-public class NotFoundException extends ApplicationException {
-    // For resources that don't exist
+public class UnauthorizedException extends TaskManagementException {
+    // For authentication failures (401)
 }
 
-public class AuthenticationException extends ApplicationException {
-    // For authentication failures
+public class ForbiddenException extends TaskManagementException {
+    // For authorization failures (403)
 }
 
-public class AuthorizationException extends ApplicationException {
-    // For permission denied scenarios
+public class ValidationException extends TaskManagementException {
+    // For invalid input data (400)
 }
 
-public class DuplicateException extends ApplicationException {
-    // For unique constraint violations
+public class ConflictException extends TaskManagementException {
+    // For business rule violations (409)
 }
 ```
 
-### Error Handling Strategy
+### Error Response Format
 
-1. **Input Validation**: Validate all inputs at the service layer before processing
-2. **Null Checks**: Use Optional<T> for potentially null values
-3. **Transaction Management**: Wrap database operations in transactions with rollback on error
-4. **Logging**: Log all exceptions with context information
-5. **User-Friendly Messages**: Convert technical exceptions to user-friendly error messages at the presentation layer
+```json
+{
+    "timestamp": "2024-12-02T10:30:00Z",
+    "status": 404,
+    "error": "Not Found",
+    "message": "Task with id 123 not found",
+    "path": "/api/tasks/123"
+}
+```
 
-### Common Error Scenarios
+### Global Exception Handler
 
-| Scenario | Exception Type | HTTP Status | User Message |
-|----------|---------------|-------------|--------------|
-| Invalid email format | ValidationException | 400 | "Email không hợp lệ" |
-| User not found | NotFoundException | 404 | "Người dùng không tồn tại" |
-| Wrong password | AuthenticationException | 401 | "Mật khẩu không đúng" |
-| Access denied | AuthorizationException | 403 | "Bạn không có quyền truy cập" |
-| Duplicate username | DuplicateException | 409 | "Tên người dùng đã tồn tại" |
-| Sprint date invalid | ValidationException | 400 | "Ngày kết thúc phải sau ngày bắt đầu" |
+```java
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new ErrorResponse(ex.getMessage()));
+    }
+    
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(ValidationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new ErrorResponse(ex.getMessage()));
+    }
+    
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(new ErrorResponse(ex.getMessage()));
+    }
+    
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(new ErrorResponse(ex.getMessage()));
+    }
+    
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(new ErrorResponse(ex.getMessage()));
+    }
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErrorResponse("An unexpected error occurred"));
+    }
+}
+```
+
+### Validation Rules
+
+**User Validation:**
+- Username: 3-50 characters, alphanumeric and underscore only
+- Email: Valid email format
+- Password: Minimum 8 characters, at least one uppercase, one lowercase, one digit
+
+**Project Validation:**
+- Name: 1-200 characters, required
+- Description: Maximum 1000 characters, optional
+
+**Sprint Validation:**
+- Name: 1-200 characters, required
+- Start date: Cannot be in the past
+- End date: Must be after start date
+- Date range: Cannot overlap with existing sprints in the same project
+
+**Task Validation:**
+- Title: 1-200 characters, required
+- Description: Maximum 2000 characters, optional
+- Due date: Cannot be in the past
+- Assignee: Must be a member of the task's project
+- Sprint: Must belong to the same project as the task
 
 ## Testing Strategy
 
 ### Unit Testing
 
-Hệ thống sẽ sử dụng **JUnit 5** cho unit testing và **Mockito** cho mocking dependencies.
+**Framework:** JUnit 5 + Mockito
 
-**Unit Test Coverage:**
+**Coverage Areas:**
+- Service layer business logic
+- Repository queries
+- Validation logic
+- DTO conversions
+- Exception handling
 
-1. **Domain Layer Tests**
-   - Test business logic trong các entity methods
-   - Test validation rules
-   - Test state transitions (task status changes)
-   - Test calculations (remaining hours, completion percentage)
-
-2. **Service Layer Tests**
-   - Test use case implementations
-   - Test error handling and validation
-   - Test authorization logic
-   - Mock repository dependencies
-
-3. **Repository Layer Tests**
-   - Test CRUD operations
-   - Test query methods
-   - Test filtering and sorting
-   - Use in-memory database (H2) for testing
-
-**Example Unit Test:**
+**Example Unit Tests:**
 ```java
-@Test
-public void testTaskRemainingHoursCalculation() {
-    Task task = new Task();
-    task.setEstimatedHours(10);
-    task.setActualHours(6);
+@ExtendWith(MockitoExtension.class)
+class TaskServiceTest {
     
-    assertEquals(4, task.getRemainingHours());
+    @Mock
+    private TaskRepository taskRepository;
+    
+    @Mock
+    private NotificationService notificationService;
+    
+    @InjectMocks
+    private TaskService taskService;
+    
+    @Test
+    void createTask_WithValidData_ShouldCreateTaskWithTodoStatus() {
+        // Arrange
+        TaskDTO taskDTO = new TaskDTO("Test Task", "Description", 
+            TaskPriority.HIGH, null, 1L, null, null);
+        
+        // Act
+        Task result = taskService.createTask(taskDTO);
+        
+        // Assert
+        assertEquals(TaskStatus.TODO, result.getStatus());
+        verify(taskRepository).save(any(Task.class));
+    }
+    
+    @Test
+    void assignTask_WithNonProjectMember_ShouldThrowException() {
+        // Arrange
+        Long taskId = 1L;
+        Long userId = 2L;
+        when(projectService.isMember(any(), any())).thenReturn(false);
+        
+        // Act & Assert
+        assertThrows(ValidationException.class, 
+            () -> taskService.assignTask(taskId, userId));
+    }
 }
 ```
 
 ### Property-Based Testing
 
-Hệ thống sẽ sử dụng **jqwik** (Java property-based testing framework) để kiểm thử các correctness properties.
+**Framework:** jqwik (Java property-based testing library)
 
-**Property-Based Testing Requirements:**
+**Configuration:** Each property test should run minimum 100 iterations
 
-1. Mỗi property test phải chạy tối thiểu **100 iterations** với dữ liệu ngẫu nhiên
-2. Mỗi property test phải có comment tham chiếu đến correctness property trong design document
-3. Format comment: `// Feature: task-project-management, Property X: [property description]`
-4. Sử dụng generators thông minh để tạo dữ liệu test hợp lệ
-
-**Example Property Test:**
+**Test Annotation Format:**
 ```java
+/**
+ * Feature: task-project-management, Property X: [property description]
+ * Validates: Requirements X.Y
+ */
 @Property
-// Feature: task-project-management, Property 22: Remaining hours calculation
-void remainingHoursAlwaysEqualsEstimatedMinusActual(
-    @ForAll @IntRange(min = 1, max = 100) int estimatedHours,
-    @ForAll @IntRange(min = 0, max = 100) int actualHours) {
-    
-    Assume.that(actualHours <= estimatedHours);
-    
-    Task task = new Task();
-    task.setEstimatedHours(estimatedHours);
-    task.setActualHours(actualHours);
-    
-    assertEquals(estimatedHours - actualHours, task.getRemainingHours());
+void propertyTestName(@ForAll ...) {
+    // Test implementation
 }
 ```
 
-**Property Test Categories:**
-
-1. **Invariant Properties**: Properties that must always hold (e.g., password encryption, ordering)
-2. **Round-trip Properties**: Operations that should be reversible (e.g., register then login)
-3. **Idempotent Properties**: Operations that produce same result when repeated (e.g., marking todo as completed twice)
-4. **Metamorphic Properties**: Relationships between operations (e.g., adding task increases count)
+**Example Property Tests:**
+```java
+class TaskPropertyTests {
+    
+    /**
+     * Feature: task-project-management, Property 15: New tasks have TODO status
+     * Validates: Requirements 4.1
+     */
+    @Property(tries = 100)
+    void newTasksAlwaysHaveTodoStatus(
+        @ForAll @StringLength(min = 1, max = 200) String title,
+        @ForAll @StringLength(max = 2000) String description,
+        @ForAll TaskPriority priority) {
+        
+        // Arrange
+        TaskDTO taskDTO = new TaskDTO(title, description, priority, 
+            null, projectId, null, null);
+        
+        // Act
+        Task task = taskService.createTask(taskDTO);
+        
+        // Assert
+        assertEquals(TaskStatus.TODO, task.getStatus());
+    }
+    
+    /**
+     * Feature: task-project-management, Property 8: Project deletion cascades to tasks
+     * Validates: Requirements 2.3
+     */
+    @Property(tries = 100)
+    void deletingProjectDeletesAllTasks(
+        @ForAll @IntRange(min = 0, max = 50) int taskCount) {
+        
+        // Arrange
+        Project project = createTestProject();
+        List<Task> tasks = createRandomTasks(project, taskCount);
+        
+        // Act
+        projectService.deleteProject(project.getId());
+        
+        // Assert
+        for (Task task : tasks) {
+            assertFalse(taskRepository.existsById(task.getId()));
+        }
+    }
+    
+    /**
+     * Feature: task-project-management, Property 25: Completion percentage calculated correctly
+     * Validates: Requirements 6.1
+     */
+    @Property(tries = 100)
+    void completionPercentageIsAccurate(
+        @ForAll @IntRange(min = 1, max = 100) int totalTasks,
+        @ForAll @IntRange(min = 0, max = 100) int completedTasks) {
+        
+        Assume.that(completedTasks <= totalTasks);
+        
+        // Arrange
+        Project project = createProjectWithTasks(totalTasks, completedTasks);
+        
+        // Act
+        double percentage = reportService.getProjectProgress(project.getId())
+            .getCompletionPercentage();
+        
+        // Assert
+        double expected = (completedTasks * 100.0) / totalTasks;
+        assertEquals(expected, percentage, 0.01);
+    }
+}
+```
 
 ### Integration Testing
 
-1. **API Integration Tests**: Test REST endpoints with real HTTP requests
-2. **Database Integration Tests**: Test repository layer with real database
-3. **End-to-End Tests**: Test complete user workflows
+**Framework:** Spring Boot Test + TestContainers (for MySQL)
+
+**Coverage Areas:**
+- REST API endpoints
+- Database operations
+- Authentication and authorization
+- End-to-end workflows
+
+**Example Integration Test:**
+```java
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Testcontainers
+class TaskControllerIntegrationTest {
+    
+    @Container
+    static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0");
+    
+    @Autowired
+    private TestRestTemplate restTemplate;
+    
+    @Test
+    void createTask_WithValidData_ReturnsCreatedTask() {
+        // Arrange
+        TaskDTO taskDTO = new TaskDTO("Integration Test Task", 
+            "Description", TaskPriority.HIGH, null, 1L, null, null);
+        
+        // Act
+        ResponseEntity<Task> response = restTemplate.postForEntity(
+            "/api/tasks", taskDTO, Task.class);
+        
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(TaskStatus.TODO, response.getBody().getStatus());
+    }
+}
+```
+
+### Frontend Testing (React Web)
+
+**Framework:** Jest + React Testing Library
+
+**Coverage Areas:**
+- Component rendering
+- User interactions
+- Navigation flows
+- API integration
+- Form validation
+
+**Example Component Test:**
+```javascript
+describe('TaskCard', () => {
+  it('displays task information correctly', () => {
+    const task = {
+      id: 1,
+      title: 'Test Task',
+      status: 'TODO',
+      priority: 'HIGH',
+      dueDate: '2024-12-10'
+    };
+    
+    const { getByText } = render(<TaskCard task={task} />);
+    
+    expect(getByText('Test Task')).toBeInTheDocument();
+    expect(getByText('TODO')).toBeInTheDocument();
+    expect(getByText('HIGH')).toBeInTheDocument();
+  });
+  
+  it('handles click events', () => {
+    const handleClick = jest.fn();
+    const task = { id: 1, title: 'Test Task' };
+    
+    const { getByText } = render(
+      <TaskCard task={task} onClick={handleClick} />
+    );
+    
+    fireEvent.click(getByText('Test Task'));
+    expect(handleClick).toHaveBeenCalledWith(task);
+  });
+});
+```
 
 ### Test Data Generators
 
-Sử dụng jqwik Arbitraries để tạo test data:
+For property-based testing, we need generators for domain objects:
 
 ```java
 @Provide
 Arbitrary<User> users() {
     return Combinators.combine(
-        Arbitraries.strings().alpha().ofMinLength(3).ofMaxLength(20),
+        Arbitraries.strings().alpha().ofLength(10),
         Arbitraries.emails(),
-        Arbitraries.strings().ofMinLength(8)
+        Arbitraries.strings().ofLength(12)
     ).as((username, email, password) -> 
-        new User(username, email, password)
-    );
+        new User(username, email, password, UserRole.MEMBER));
 }
 
 @Provide
 Arbitrary<Task> tasks() {
     return Combinators.combine(
-        Arbitraries.strings().ofMinLength(1).ofMaxLength(100),
-        Arbitraries.strings().ofMaxLength(500),
-        Arbitraries.of(Priority.class),
-        Arbitraries.integers().between(1, 100)
-    ).as((title, description, priority, estimatedHours) ->
-        new Task(title, description, priority, estimatedHours)
-    );
+        Arbitraries.strings().ofMinLength(1).ofMaxLength(200),
+        Arbitraries.strings().ofMaxLength(2000),
+        Arbitraries.of(TaskPriority.class),
+        Arbitraries.of(TaskStatus.class)
+    ).as((title, desc, priority, status) -> 
+        new Task(title, desc, priority, status));
 }
 ```
 
-### Test Execution Strategy
+## Security Considerations
 
-1. **Development Phase**: Run unit tests and property tests on every build
-2. **Pre-commit**: Run all tests before committing code
-3. **CI/CD Pipeline**: Run full test suite including integration tests
-4. **Coverage Target**: Aim for 80% code coverage for service and domain layers
+### Authentication
+- JWT (JSON Web Token) based authentication
+- Token expiration: 24 hours
+- Refresh token mechanism for extended sessions
 
-## Sequence Diagrams
+### Authorization
+- Role-based access control (RBAC)
+- Project-level permissions (manager vs member)
+- Resource ownership validation
 
-### Use Case 1: Tạo và phân công Task
+### Password Security
+- BCrypt hashing with salt
+- Minimum password strength requirements
+- Password change functionality
 
-```mermaid
-sequenceDiagram
-    actor PM as Project Manager
-    participant UI as User Interface
-    participant TC as TaskController
-    participant TS as TaskService
-    participant TR as TaskRepository
-    participant NS as NotificationService
-    participant DB as Database
-    
-    PM->>UI: Tạo task mới
-    UI->>TC: createTask(request)
-    TC->>TS: createTask(projectId, title, desc, priority, hours)
-    TS->>TS: Validate input
-    TS->>TR: save(task)
-    TR->>DB: INSERT task
-    DB-->>TR: task saved
-    TR-->>TS: task
-    TS-->>TC: task
-    TC-->>UI: Response(task)
-    UI-->>PM: Hiển thị task đã tạo
-    
-    PM->>UI: Phân công task cho member
-    UI->>TC: assignTask(taskId, userId)
-    TC->>TS: assignTask(taskId, userId)
-    TS->>TR: findById(taskId)
-    TR-->>TS: task
-    TS->>TS: task.setAssignee(userId)
-    TS->>TR: update(task)
-    TR->>DB: UPDATE task
-    TS->>NS: notifyTaskAssignment(userId, taskId)
-    NS->>DB: INSERT notification
-    TS-->>TC: task
-    TC-->>UI: Response(task)
-    UI-->>PM: Xác nhận phân công
+### API Security
+- HTTPS only in production
+- CORS configuration for React web app
+- Rate limiting on authentication endpoints
+- Input validation and sanitization
+- SQL injection prevention (JPA/Hibernate)
+- CSRF protection
+
+### Data Privacy
+- User data encryption at rest
+- Secure session management
+- Audit logging for sensitive operations
+
+## Deployment Architecture
+
+### Development Environment
+```
+┌─────────────────┐
+│  React Web App  │
+│  (Vite/CRA)     │
+│  localhost:3000 │
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│  Spring Boot    │
+│  localhost:8080 │
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│  MySQL          │
+│  localhost:3306 │
+└─────────────────┘
 ```
 
-### Use Case 2: Cập nhật trạng thái Task
-
-```mermaid
-sequenceDiagram
-    actor TM as Team Member
-    participant UI as User Interface
-    participant TC as TaskController
-    participant TS as TaskService
-    participant TR as TaskRepository
-    participant NS as NotificationService
-    participant DB as Database
-    
-    TM->>UI: Chuyển task sang "In Progress"
-    UI->>TC: updateTaskStatus(taskId, IN_PROGRESS)
-    TC->>TS: updateTaskStatus(taskId, IN_PROGRESS, userId)
-    TS->>TR: findById(taskId)
-    TR-->>TS: task
-    TS->>TS: Kiểm tra quyền (userId == assigneeId)
-    TS->>TS: task.updateStatus(IN_PROGRESS)
-    TS->>TS: task.setStartedAt(now())
-    TS->>TR: update(task)
-    TR->>DB: UPDATE task
-    TS->>NS: notifyStatusChange(taskId, TODO, IN_PROGRESS)
-    NS->>DB: INSERT notifications
-    TS-->>TC: task
-    TC-->>UI: Response(task)
-    UI-->>TM: Hiển thị trạng thái mới
-```
-
-### Use Case 3: Tạo báo cáo Sprint
-
-```mermaid
-sequenceDiagram
-    actor PM as Project Manager
-    participant UI as User Interface
-    participant RC as ReportController
-    participant RS as ReportService
-    participant SR as SprintRepository
-    participant TR as TaskRepository
-    participant DB as Database
-    
-    PM->>UI: Yêu cầu báo cáo sprint
-    UI->>RC: generateSprintReport(sprintId)
-    RC->>RS: generateSprintReport(sprintId)
-    RS->>SR: findById(sprintId)
-    SR->>DB: SELECT sprint
-    DB-->>SR: sprint
-    SR-->>RS: sprint
-    RS->>TR: findBySprint(sprintId)
-    TR->>DB: SELECT tasks WHERE sprint_id = ?
-    DB-->>TR: tasks
-    TR-->>RS: tasks
-    RS->>RS: Calculate completed tasks
-    RS->>RS: Calculate incomplete tasks
-    RS->>RS: Calculate velocity
-    RS->>RS: Calculate member contributions
-    RS->>RS: Create SprintReport object
-    RS-->>RC: sprintReport
-    RC-->>UI: Response(sprintReport)
-    UI-->>PM: Hiển thị báo cáo
-    
-    PM->>UI: Export to PDF
-    UI->>RC: exportReportToPDF(reportId)
-    RC->>RS: exportReportToPDF(report)
-    RS->>RS: Generate PDF from report data
-    RS-->>RC: pdfBytes
-    RC-->>UI: PDF file
-    UI-->>PM: Download PDF
-```
-
-## Activity Diagrams
-
-### Quy trình tạo và quản lý Sprint
-
-```mermaid
-flowchart TD
-    Start([Bắt đầu]) --> CreateSprint[Tạo Sprint mới]
-    CreateSprint --> ValidateDates{Ngày hợp lệ?}
-    ValidateDates -->|Không| ShowError[Hiển thị lỗi]
-    ShowError --> CreateSprint
-    ValidateDates -->|Có| SaveSprint[Lưu Sprint]
-    SaveSprint --> AddTasks[Thêm Tasks vào Sprint]
-    AddTasks --> StartSprint[Bắt đầu Sprint]
-    StartSprint --> WorkOnTasks[Team làm việc trên Tasks]
-    WorkOnTasks --> UpdateStatus[Cập nhật trạng thái Tasks]
-    UpdateStatus --> CheckComplete{Sprint hoàn thành?}
-    CheckComplete -->|Chưa| WorkOnTasks
-    CheckComplete -->|Rồi| GenerateReport[Tạo báo cáo Sprint]
-    GenerateReport --> ReviewReport[Review báo cáo]
-    ReviewReport --> CloseSprint[Đóng Sprint]
-    CloseSprint --> End([Kết thúc])
-```
-
-## Project Structure
-
-### Maven Project Structure
-
-```
-task-management-system/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/
-│   │   │       └── taskmanagement/
-│   │   │           ├── TaskManagementApplication.java
-│   │   │           ├── config/
-│   │   │           │   ├── SecurityConfig.java
-│   │   │           │   ├── DatabaseConfig.java
-│   │   │           │   └── WebConfig.java
-│   │   │           ├── controller/
-│   │   │           │   ├── AuthenticationController.java
-│   │   │           │   ├── ProjectController.java
-│   │   │           │   ├── SprintController.java
-│   │   │           │   ├── TaskController.java
-│   │   │           │   └── TodoController.java
-│   │   │           ├── service/
-│   │   │           │   ├── AuthenticationService.java
-│   │   │           │   ├── ProjectService.java
-│   │   │           │   ├── SprintService.java
-│   │   │           │   ├── TaskService.java
-│   │   │           │   ├── TodoService.java
-│   │   │           │   ├── ReportService.java
-│   │   │           │   └── NotificationService.java
-│   │   │           ├── domain/
-│   │   │           │   ├── entity/
-│   │   │           │   │   ├── User.java
-│   │   │           │   │   ├── Project.java
-│   │   │           │   │   ├── Sprint.java
-│   │   │           │   │   ├── Task.java
-│   │   │           │   │   ├── Todo.java
-│   │   │           │   │   └── Notification.java
-│   │   │           │   └── enums/
-│   │   │           │       ├── Role.java
-│   │   │           │       ├── TaskStatus.java
-│   │   │           │       ├── Priority.java
-│   │   │           │       └── SprintStatus.java
-│   │   │           ├── repository/
-│   │   │           │   ├── IUserRepository.java
-│   │   │           │   ├── IProjectRepository.java
-│   │   │           │   ├── ISprintRepository.java
-│   │   │           │   ├── ITaskRepository.java
-│   │   │           │   ├── ITodoRepository.java
-│   │   │           │   └── INotificationRepository.java
-│   │   │           ├── dto/
-│   │   │           │   ├── request/
-│   │   │           │   │   ├── RegisterRequest.java
-│   │   │           │   │   ├── LoginRequest.java
-│   │   │           │   │   ├── CreateProjectRequest.java
-│   │   │           │   │   ├── CreateSprintRequest.java
-│   │   │           │   │   └── CreateTaskRequest.java
-│   │   │           │   └── response/
-│   │   │           │       ├── UserResponse.java
-│   │   │           │       ├── ProjectResponse.java
-│   │   │           │       ├── SprintResponse.java
-│   │   │           │       └── TaskResponse.java
-│   │   │           ├── exception/
-│   │   │           │   ├── ApplicationException.java
-│   │   │           │   ├── ValidationException.java
-│   │   │           │   ├── NotFoundException.java
-│   │   │           │   ├── AuthenticationException.java
-│   │   │           │   └── AuthorizationException.java
-│   │   │           └── util/
-│   │   │               ├── PasswordUtil.java
-│   │   │               └── DateUtil.java
-│   │   └── resources/
-│   │       ├── application.properties
-│   │       ├── application-dev.properties
-│   │       ├── application-prod.properties
-│   │       └── schema.sql
-│   └── test/
-│       ├── java/
-│       │   └── com/
-│       │       └── taskmanagement/
-│       │           ├── service/
-│       │           │   ├── AuthenticationServiceTest.java
-│       │           │   ├── ProjectServiceTest.java
-│       │           │   ├── SprintServiceTest.java
-│       │           │   └── TaskServiceTest.java
-│       │           ├── property/
-│       │           │   ├── UserPropertyTest.java
-│       │           │   ├── ProjectPropertyTest.java
-│       │           │   ├── SprintPropertyTest.java
-│       │           │   └── TaskPropertyTest.java
-│       │           └── integration/
-│       │               ├── AuthenticationIntegrationTest.java
-│       │               └── TaskManagementIntegrationTest.java
-│       └── resources/
-│           └── application-test.properties
-├── pom.xml
-├── README.md
-└── .gitignore
-```
-
-### Maven Dependencies (pom.xml)
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>
-    </parent>
-    
-    <groupId>com.taskmanagement</groupId>
-    <artifactId>task-management-system</artifactId>
-    <version>1.0.0</version>
-    <name>Task Management System</name>
-    
-    <properties>
-        <java.version>17</java.version>
-        <jqwik.version>1.8.2</jqwik.version>
-    </properties>
-    
-    <dependencies>
-        <!-- Spring Boot Starters -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        
-        <!-- Database - MySQL -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
-        <!-- JWT -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.12.3</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.12.3</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>0.12.3</version>
-            <scope>runtime</scope>
-        </dependency>
-        
-        <!-- Testing -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.jqwik</groupId>
-            <artifactId>jqwik</artifactId>
-            <version>${jqwik.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <!-- Optional: Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-        
-        <!-- API Documentation -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-    </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-</project>
-```
-
-### React Native Project Structure
-
-```
-task-management-mobile/
-├── src/
-│   ├── api/
-│   │   ├── axiosConfig.js
-│   │   ├── authApi.js
-│   │   ├── projectApi.js
-│   │   ├── sprintApi.js
-│   │   └── taskApi.js
-│   ├── components/
-│   │   ├── common/
-│   │   │   ├── Button.js
-│   │   │   ├── Input.js
-│   │   │   └── Card.js
-│   │   ├── task/
-│   │   │   ├── TaskCard.js
-│   │   │   ├── TaskList.js
-│   │   │   └── TaskForm.js
-│   │   └── sprint/
-│   │       ├── SprintCard.js
-│   │       └── BurndownChart.js
-│   ├── screens/
-│   │   ├── auth/
-│   │   │   ├── LoginScreen.js
-│   │   │   └── RegisterScreen.js
-│   │   ├── dashboard/
-│   │   │   └── DashboardScreen.js
-│   │   ├── project/
-│   │   │   ├── ProjectListScreen.js
-│   │   │   └── ProjectDetailScreen.js
-│   │   ├── sprint/
-│   │   │   ├── SprintListScreen.js
-│   │   │   └── SprintDetailScreen.js
-│   │   └── task/
-│   │       ├── TaskListScreen.js
-│   │       └── TaskDetailScreen.js
-│   ├── navigation/
-│   │   ├── AppNavigator.js
-│   │   └── AuthNavigator.js
-│   ├── redux/
-│   │   ├── store.js
-│   │   ├── slices/
-│   │   │   ├── authSlice.js
-│   │   │   ├── projectSlice.js
-│   │   │   ├── sprintSlice.js
-│   │   │   └── taskSlice.js
-│   │   └── actions/
-│   ├── utils/
-│   │   ├── storage.js
-│   │   ├── dateUtils.js
-│   │   └── validators.js
-│   └── constants/
-│       ├── colors.js
-│       └── config.js
-├── App.js
-├── package.json
-└── .env
-```
-
-### Docker Configuration
-
-**docker-compose.yml**
+### Docker Compose Setup
 ```yaml
 version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
-    container_name: taskmanagement-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: taskmanagement
-      MYSQL_USER: taskuser
-      MYSQL_PASSWORD: taskpassword
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - taskmanagement-network
-
+  
   backend:
-    build:
-      context: ./task-management-backend
-      dockerfile: Dockerfile
-    container_name: taskmanagement-backend
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/taskmanagement?useSSL=false&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: taskuser
-      SPRING_DATASOURCE_PASSWORD: taskpassword
+    build: ./backend
     ports:
       - "8080:8080"
     depends_on:
       - mysql
-    networks:
-      - taskmanagement-network
-
-volumes:
-  mysql-data:
-
-networks:
-  taskmanagement-network:
-    driver: bridge
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/taskmanagement
 ```
 
-**Backend Dockerfile**
-```dockerfile
-FROM eclipse-temurin:17-jdk-alpine AS build
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN ./mvnw clean package -DskipTests
+## Performance Considerations
 
-FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
+### Database Optimization
+- Indexes on foreign keys and frequently queried fields
+- Pagination for list endpoints (default page size: 20)
+- Lazy loading for entity relationships
+- Connection pooling (HikariCP)
 
-### Configuration Files
+### Caching Strategy
+- Spring Cache for frequently accessed data
+- Cache user sessions
+- Cache project member lists
+- TTL: 5 minutes for most cached data
 
-**application.properties (Development)**
-```properties
-# Application
-spring.application.name=Task Management System
-server.port=8080
+### API Response Optimization
+- DTO projections to avoid over-fetching
+- Batch operations for bulk updates
+- Async processing for notifications and reports
 
-# Database - MySQL
-spring.datasource.url=jdbc:mysql://localhost:3306/taskmanagement?useSSL=false&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=password
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+## Monitoring and Logging
 
-# Security - JWT
-jwt.secret=your-secret-key-here-change-in-production
-jwt.expiration=86400000
+### Logging Strategy
+- SLF4J + Logback
+- Log levels: ERROR, WARN, INFO, DEBUG
+- Structured logging with correlation IDs
+- Log rotation and retention policies
 
-# Logging
-logging.level.com.taskmanagement=DEBUG
-logging.level.org.springframework.security=DEBUG
-logging.level.org.hibernate.SQL=DEBUG
-```
+### Metrics
+- API response times
+- Database query performance
+- Error rates by endpoint
+- Active user sessions
 
-**application-test.properties (Testing)**
-```properties
-# H2 Database for testing
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.datasource.driver-class-name=org.h2.Driver
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=false
+### Health Checks
+- Spring Boot Actuator endpoints
+- Database connectivity check
+- Disk space monitoring
 
-# Disable security for tests
-spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-```
-
-## Deployment Architecture
-
-### Technology Stack
-
-**Ngôn ngữ lập trình chính: Java 17+**
-
-**Backend Technologies:**
-- **Language**: Java 17 hoặc Java 21 (LTS versions)
-- **Framework**: Spring Boot 3.2.x
-  - Spring Web (REST API)
-  - Spring Data JPA (Database access)
-  - Spring Security (Authentication & Authorization)
-  - Spring Validation (Input validation)
-- **ORM**: Hibernate 6.x (JPA implementation)
-- **Database**: 
-  - Production: MySQL 8.0+
-  - Development/Testing: H2 Database (in-memory) hoặc MySQL
-- **Password Encryption**: BCrypt (via Spring Security)
-- **Dependency Injection**: Spring IoC Container
-- **Logging**: SLF4J + Logback
-- **API Documentation**: SpringDoc OpenAPI (Swagger)
-
-**Testing Technologies:**
-- **Unit Testing**: JUnit 5 (Jupiter)
-- **Mocking**: Mockito 5.x
-- **Property-Based Testing**: jqwik 1.8.x
-- **Integration Testing**: Spring Boot Test
-- **Code Coverage**: JaCoCo
-- **Test Database**: H2 Database
-
-**Frontend Technologies:**
-- **Framework**: React Native (Cross-platform: iOS & Android)
-- **Language**: JavaScript/TypeScript
-- **State Management**: Redux Toolkit hoặc Context API + useReducer
-- **Navigation**: React Navigation
-- **UI Components**: React Native Paper hoặc Native Base
-- **HTTP Client**: Axios
-- **Charts**: react-native-chart-kit hoặc Victory Native
-- **PDF Generation**: react-native-pdf hoặc backend-generated
-- **Authentication**: AsyncStorage cho token management
-- **Forms**: React Hook Form
-- **Icons**: React Native Vector Icons
-
-**Build & Development Tools:**
-- **Backend Build Tool**: Maven 3.9+
-- **Frontend Package Manager**: npm hoặc yarn
-- **IDE**: 
-  - Backend: IntelliJ IDEA
-  - Frontend: VS Code
-- **API Testing**: Postman
-- **Version Control**: Git
-- **Code Quality**: 
-  - Backend: SonarLint, Checkstyle
-  - Frontend: ESLint, Prettier
-- **Formatter**: 
-  - Backend: Google Java Format
-  - Frontend: Prettier
-
-**Deployment & DevOps:**
-- **Containerization**: Docker + Docker Compose
-- **Backend Container**: Java application in Docker
-- **Database Container**: MySQL in Docker
-- **Application Server**: Embedded Tomcat (Spring Boot)
-- **Monitoring**: Spring Boot Actuator
-- **Mobile Build**: 
-  - iOS: Xcode (Mac required)
-  - Android: Android Studio
-
-**Additional Libraries:**
-- **Backend**:
-  - Date/Time: Java Time API (java.time.*)
-  - JSON Processing: Jackson (included in Spring Boot)
-  - Validation: Hibernate Validator (Bean Validation)
-  - Lombok (Optional): Reduce boilerplate code
-  - MapStruct (Optional): DTO mapping
-  - JWT: jjwt (JSON Web Token)
-- **Frontend**:
-  - Date handling: date-fns hoặc moment.js
-  - Form validation: Yup hoặc Zod
-  - Push notifications: React Native Firebase
-  - Local storage: AsyncStorage
-
-### Deployment Diagram
-
-```mermaid
-graph TB
-    subgraph "Client Layer"
-        Mobile[Mobile Application<br/>React Native<br/>iOS & Android]
-    end
-    
-    subgraph "Application Server"
-        API[REST API<br/>Spring Boot]
-        Auth[Authentication<br/>Spring Security]
-        Services[Business Services]
-    end
-    
-    subgraph "Data Layer"
-        DB[(PostgreSQL<br/>Database)]
-        Cache[Redis Cache<br/>Optional]
-    end
-    
-    Mobile --> API
-    API --> Auth
-    API --> Services
-    Services --> DB
-    Services --> Cache
-```
-
-## Design Decisions and Rationale
-
-### 1. Layered Architecture
-**Decision**: Sử dụng kiến trúc 4 lớp (Presentation, Application, Domain, Infrastructure)
-**Rationale**: 
-- Tách biệt concerns rõ ràng
-- Dễ test từng layer độc lập
-- Dễ thay đổi implementation của một layer mà không ảnh hưởng các layer khác
-- Phù hợp với yêu cầu phi chức năng về khả năng mở rộng (Requirement 13)
-
-### 2. Repository Pattern
-**Decision**: Sử dụng Repository Pattern cho data access
-**Rationale**:
-- Tách biệt business logic khỏi data access logic
-- Dễ mock repositories trong unit tests
-- Có thể thay đổi database implementation dễ dàng
-- Tuân thủ Dependency Inversion Principle (SOLID)
-
-### 3. Service Layer
-**Decision**: Đặt business logic trong Service Layer
-**Rationale**:
-- Controllers chỉ xử lý HTTP concerns
-- Services có thể được reuse bởi nhiều controllers
-- Dễ test business logic độc lập với presentation layer
-- Tuân thủ Single Responsibility Principle
-
-### 4. Observer Pattern cho Notifications
-**Decision**: Sử dụng Observer Pattern để gửi notifications
-**Rationale**:
-- Decoupling giữa task operations và notification logic
-- Dễ thêm các loại notifications mới
-- Không làm chậm main business operations
-
-### 5. Enum cho Status và Priority
-**Decision**: Sử dụng Java Enums thay vì strings
-**Rationale**:
-- Type safety - compiler kiểm tra giá trị hợp lệ
-- Tránh typos và magic strings
-- Dễ refactor và maintain
-- IDE support tốt hơn (autocomplete)
-
-### 6. UUID cho Primary Keys
-**Decision**: Sử dụng UUID thay vì auto-increment integers
-**Rationale**:
-- Tránh collision khi merge data từ nhiều sources
-- Không expose thông tin về số lượng records
-- Có thể generate ID ở client side nếu cần
-- Phù hợp với distributed systems
-
-### 7. Soft Delete (Optional)
-**Decision**: Có thể implement soft delete cho các entities quan trọng
-**Rationale**:
-- Có thể recover data nếu xóa nhầm
-- Audit trail tốt hơn
-- Compliance với data retention policies
-- Trade-off: phức tạp hơn trong queries
-
-### 8. Property-Based Testing với jqwik
-**Decision**: Sử dụng jqwik cho property-based testing
-**Rationale**:
-- Tự động generate nhiều test cases
-- Phát hiện edge cases mà developer không nghĩ tới
-- Tăng confidence về correctness
-- Phù hợp với formal specification approach
-
-## Future Enhancements
-
-1. **Real-time Collaboration**: WebSocket cho real-time updates
-2. **File Attachments**: Đính kèm files vào tasks
-3. **Comments**: Thảo luận trên tasks
-4. **Time Tracking**: Tích hợp time tracking chi tiết
-5. **Gantt Chart**: Visualization cho project timeline
-6. **Mobile App**: iOS/Android applications
-7. **Integration**: Jira, GitHub, Slack integration
-8. **AI Features**: Auto-assign tasks, estimate hours
-9. **Custom Workflows**: Configurable task workflows
-10. **Advanced Analytics**: Predictive analytics, team performance metrics

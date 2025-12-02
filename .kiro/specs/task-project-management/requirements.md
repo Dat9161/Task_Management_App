@@ -1,177 +1,141 @@
-# Requirements Document
+# Requirements Document - Task & Project Management Tool
 
 ## Introduction
 
-Hệ thống Task & Project Management Tool là một ứng dụng quản lý dự án và công việc được thiết kế cho các nhóm phát triển phần mềm sử dụng phương pháp Agile/Scrum. Hệ thống cho phép quản lý to-do cá nhân, task nhóm, theo dõi tiến độ, phân công công việc và tạo báo cáo theo sprint. Ứng dụng này giải quyết vấn đề phối hợp công việc trong nhóm, theo dõi tiến độ dự án và đảm bảo tính minh bạch trong quá trình phát triển phần mềm.
+Ứng dụng Task & Project Management Tool là một hệ thống quản lý công việc và dự án được thiết kế để hỗ trợ các nhóm làm việc theo phương pháp Agile/Scrum. Hệ thống cho phép quản lý to-do cá nhân, phân công task cho nhóm, theo dõi tiến độ công việc, và tạo báo cáo theo sprint. Đây là một giải pháp phần mềm hướng đối tượng được xây dựng để giải quyết bài toán thực tế trong quản lý dự án phần mềm.
 
 ## Glossary
 
-- **System**: Task & Project Management Tool - hệ thống quản lý dự án và công việc
-- **User**: Người dùng của hệ thống, có thể là thành viên nhóm hoặc quản lý dự án
-- **Project**: Dự án - một tập hợp các sprint và task liên quan đến một mục tiêu chung
-- **Sprint**: Chu kỳ phát triển ngắn (thường 1-4 tuần) trong phương pháp Scrum
-- **Task**: Công việc cụ thể cần hoàn thành trong một sprint
-- **Todo**: Công việc cá nhân của người dùng
-- **Team Member**: Thành viên nhóm - người thực hiện các task
-- **Project Manager**: Quản lý dự án - người tạo và quản lý project, sprint và phân công task
-- **Status**: Trạng thái của task (To Do, In Progress, Done, Blocked)
-- **Priority**: Mức độ ưu tiên của task (Low, Medium, High, Critical)
-- **Report**: Báo cáo tổng hợp về tiến độ và hiệu suất
+- **System**: Task & Project Management Tool - hệ thống quản lý task và dự án
+- **User**: Người dùng của hệ thống (có thể là member hoặc project manager)
+- **Task**: Công việc cụ thể cần hoàn thành với thông tin như tên, mô tả, độ ưu tiên, trạng thái
+- **Project**: Dự án chứa nhiều task và được quản lý theo sprint
+- **Sprint**: Chu kỳ làm việc ngắn (thường 1-4 tuần) trong phương pháp Agile
+- **Member**: Thành viên trong nhóm, có thể được phân công task
+- **Project Manager**: Người quản lý dự án, có quyền tạo project, phân công task
+- **Status**: Trạng thái của task (TODO, IN_PROGRESS, DONE, BLOCKED)
+- **Priority**: Độ ưu tiên của task (LOW, MEDIUM, HIGH, CRITICAL)
+- **Report**: Báo cáo tiến độ công việc theo sprint
 
 ## Requirements
 
-### Requirement 1: Quản lý người dùng và xác thực
+### Requirement 1: Quản lý người dùng (User Management)
 
-**User Story:** Là một người dùng, tôi muốn đăng ký và đăng nhập vào hệ thống, để có thể truy cập và quản lý công việc của mình.
-
-#### Acceptance Criteria
-
-1. WHEN a User provides valid registration information (username, email, password), THE System SHALL create a new user account and store the credentials securely
-2. WHEN a User provides valid login credentials, THE System SHALL authenticate the User and grant access to the application
-3. WHEN a User provides invalid login credentials, THE System SHALL reject the authentication attempt and display an error message
-4. WHEN a User requests password reset, THE System SHALL send a password reset link to the registered email address
-5. THE System SHALL encrypt all user passwords before storing them in the database
-
-### Requirement 2: Quản lý dự án (Project)
-
-**User Story:** Là một Project Manager, tôi muốn tạo và quản lý các dự án, để tổ chức công việc theo từng dự án riêng biệt.
+**User Story:** As a user, I want to register and login to the system, so that I can access my tasks and projects securely.
 
 #### Acceptance Criteria
 
-1. WHEN a Project Manager creates a new Project with name and description, THE System SHALL store the Project and associate it with the creator
-2. WHEN a Project Manager views the project list, THE System SHALL display all Projects that the User has access to
-3. WHEN a Project Manager updates Project information, THE System SHALL save the changes and update the modification timestamp
-4. WHEN a Project Manager deletes a Project, THE System SHALL remove the Project and all associated Sprints and Tasks
-5. WHEN a Project Manager adds a Team Member to a Project, THE System SHALL grant that User access to view and work on the Project
+1. WHEN a user provides valid registration information (username, email, password) THEN the System SHALL create a new user account with unique identifier
+2. WHEN a user provides valid login credentials THEN the System SHALL authenticate the user and grant access to the application
+3. WHEN a user provides invalid credentials THEN the System SHALL reject the login attempt and display an error message
+4. WHEN a user logs out THEN the System SHALL terminate the user session and require re-authentication for subsequent access
+5. THE System SHALL store user passwords in encrypted format to ensure security
 
-### Requirement 3: Quản lý Sprint
+### Requirement 2: Quản lý dự án (Project Management)
 
-**User Story:** Là một Project Manager, tôi muốn tạo và quản lý các sprint trong dự án, để tổ chức công việc theo chu kỳ phát triển ngắn.
-
-#### Acceptance Criteria
-
-1. WHEN a Project Manager creates a Sprint with name, start date, and end date within a Project, THE System SHALL validate the dates and create the Sprint
-2. WHEN a Project Manager views a Project, THE System SHALL display all Sprints belonging to that Project ordered by start date
-3. WHEN a Project Manager updates Sprint information, THE System SHALL validate the new dates and save the changes
-4. WHEN a Sprint end date is reached, THE System SHALL automatically mark the Sprint as completed
-5. WHEN a Project Manager deletes a Sprint, THE System SHALL move all associated Tasks back to the Project backlog
-
-### Requirement 4: Quản lý Task
-
-**User Story:** Là một Project Manager, tôi muốn tạo và phân công các task, để phân chia công việc cho các thành viên trong nhóm.
+**User Story:** As a project manager, I want to create and manage projects, so that I can organize work into structured initiatives.
 
 #### Acceptance Criteria
 
-1. WHEN a Project Manager creates a Task with title, description, Priority, and estimated hours, THE System SHALL create the Task and add it to the Project backlog
-2. WHEN a Project Manager assigns a Task to a Team Member, THE System SHALL update the Task assignee and notify the Team Member
-3. WHEN a Project Manager adds a Task to a Sprint, THE System SHALL associate the Task with that Sprint
-4. WHEN a Project Manager updates Task information, THE System SHALL save the changes and update the modification timestamp
-5. WHEN a Project Manager deletes a Task, THE System SHALL remove the Task from the System
+1. WHEN a project manager creates a project with name and description THEN the System SHALL create a new project with unique identifier and set the creator as project manager
+2. WHEN a project manager updates project information THEN the System SHALL save the changes and maintain project history
+3. WHEN a project manager deletes a project THEN the System SHALL remove the project and all associated tasks from the database
+4. WHEN a user views project list THEN the System SHALL display all projects the user has access to with basic information
+5. WHEN a project manager adds a member to a project THEN the System SHALL grant that member access to view and work on project tasks
 
-### Requirement 5: Cập nhật trạng thái Task
+### Requirement 3: Quản lý Sprint (Sprint Management)
 
-**User Story:** Là một Team Member, tôi muốn cập nhật trạng thái công việc của mình, để phản ánh tiến độ thực tế.
-
-#### Acceptance Criteria
-
-1. WHEN a Team Member changes a Task Status from "To Do" to "In Progress", THE System SHALL update the Status and record the start time
-2. WHEN a Team Member changes a Task Status to "Done", THE System SHALL update the Status and record the completion time
-3. WHEN a Team Member changes a Task Status to "Blocked", THE System SHALL update the Status and require a blocking reason
-4. WHEN a Team Member updates actual hours spent on a Task, THE System SHALL record the hours and calculate the remaining hours
-5. THE System SHALL prevent a Team Member from changing the Status of a Task not assigned to them
-
-### Requirement 6: Quản lý Todo cá nhân
-
-**User Story:** Là một User, tôi muốn tạo và quản lý danh sách todo cá nhân, để theo dõi các công việc riêng của mình.
+**User Story:** As a project manager, I want to create and manage sprints within projects, so that I can organize work into time-boxed iterations.
 
 #### Acceptance Criteria
 
-1. WHEN a User creates a Todo with title and optional due date, THE System SHALL create the Todo and associate it with the User
-2. WHEN a User views their todo list, THE System SHALL display all Todos ordered by due date and priority
-3. WHEN a User marks a Todo as completed, THE System SHALL update the Todo status and record the completion time
-4. WHEN a User deletes a Todo, THE System SHALL remove the Todo from the System
-5. THE System SHALL display overdue Todos with a visual indicator
+1. WHEN a project manager creates a sprint with name, start date, and end date THEN the System SHALL create a new sprint associated with the project
+2. WHEN a project manager assigns tasks to a sprint THEN the System SHALL associate those tasks with the sprint
+3. WHEN a sprint end date is reached THEN the System SHALL mark the sprint as completed
+4. WHEN viewing a sprint THEN the System SHALL display all tasks assigned to that sprint with their current status
+5. THE System SHALL prevent overlapping sprint dates within the same project
 
-### Requirement 7: Theo dõi tiến độ Sprint
+### Requirement 4: Quản lý Task (Task Management)
 
-**User Story:** Là một Project Manager, tôi muốn xem tiến độ của sprint hiện tại, để đánh giá khả năng hoàn thành mục tiêu sprint.
-
-#### Acceptance Criteria
-
-1. WHEN a Project Manager views a Sprint, THE System SHALL display the total number of Tasks in each Status category
-2. WHEN a Project Manager views a Sprint, THE System SHALL calculate and display the percentage of completed Tasks
-3. WHEN a Project Manager views a Sprint, THE System SHALL display the total estimated hours versus actual hours spent
-4. WHEN a Project Manager views a Sprint, THE System SHALL display a burndown chart showing remaining work over time
-5. WHEN a Sprint has blocked Tasks, THE System SHALL highlight them with a warning indicator
-
-### Requirement 8: Tạo báo cáo Sprint
-
-**User Story:** Là một Project Manager, tôi muốn tạo báo cáo tổng kết sprint, để đánh giá hiệu suất và chia sẻ với stakeholders.
+**User Story:** As a user, I want to create and manage tasks, so that I can track work items that need to be completed.
 
 #### Acceptance Criteria
 
-1. WHEN a Project Manager generates a Sprint Report, THE System SHALL include the list of completed Tasks with actual hours
-2. WHEN a Project Manager generates a Sprint Report, THE System SHALL include the list of incomplete Tasks with reasons
-3. WHEN a Project Manager generates a Sprint Report, THE System SHALL calculate team velocity (completed story points or hours)
-4. WHEN a Project Manager generates a Sprint Report, THE System SHALL include individual Team Member contributions
-5. WHEN a Project Manager generates a Sprint Report, THE System SHALL allow exporting the Report to PDF format
+1. WHEN a user creates a task with title, description, priority, and due date THEN the System SHALL create a new task with status TODO
+2. WHEN a user updates task information THEN the System SHALL save the changes and update the last modified timestamp
+3. WHEN a user changes task status THEN the System SHALL update the status and record the status change history
+4. WHEN a user deletes a task THEN the System SHALL remove the task from the database
+5. WHEN viewing tasks THEN the System SHALL display tasks with all relevant information including assignee, priority, status, and due date
 
-### Requirement 9: Dashboard và thông báo
+### Requirement 5: Phân công Task (Task Assignment)
 
-**User Story:** Là một User, tôi muốn xem tổng quan về công việc của mình trên dashboard, để nắm bắt nhanh các thông tin quan trọng.
-
-#### Acceptance Criteria
-
-1. WHEN a User accesses the dashboard, THE System SHALL display all Tasks assigned to the User grouped by Status
-2. WHEN a User accesses the dashboard, THE System SHALL display upcoming deadlines for Tasks and Todos
-3. WHEN a Task is assigned to a User, THE System SHALL create a notification for that User
-4. WHEN a Task Status is changed, THE System SHALL notify the Project Manager and assigned Team Member
-5. WHEN a User accesses the notification panel, THE System SHALL display all unread notifications ordered by time
-
-### Requirement 10: Tìm kiếm và lọc
-
-**User Story:** Là một User, tôi muốn tìm kiếm và lọc các task và project, để nhanh chóng tìm thấy thông tin cần thiết.
+**User Story:** As a project manager, I want to assign tasks to team members, so that work is distributed and responsibilities are clear.
 
 #### Acceptance Criteria
 
-1. WHEN a User enters a search query, THE System SHALL search across Project names, Task titles, and descriptions
-2. WHEN a User applies a Status filter, THE System SHALL display only Tasks matching the selected Status
-3. WHEN a User applies a Priority filter, THE System SHALL display only Tasks matching the selected Priority
-4. WHEN a User applies an assignee filter, THE System SHALL display only Tasks assigned to the selected Team Member
-5. WHEN a User applies multiple filters, THE System SHALL display Tasks matching all filter criteria
+1. WHEN a project manager assigns a task to a member THEN the System SHALL set that member as the task assignee and send notification
+2. WHEN a task is assigned to a member THEN the System SHALL verify that the member belongs to the project
+3. WHEN a project manager reassigns a task to a different member THEN the System SHALL update the assignee and notify both old and new assignees
+4. WHEN viewing assigned tasks THEN the System SHALL display all tasks assigned to the current user
+5. WHEN a member is removed from a project THEN the System SHALL unassign all tasks assigned to that member
 
-### Requirement 11: Yêu cầu phi chức năng - Hiệu suất
+### Requirement 6: Theo dõi tiến độ (Progress Tracking)
 
-**User Story:** Là một User, tôi muốn hệ thống phản hồi nhanh chóng, để có trải nghiệm sử dụng mượt mà.
-
-#### Acceptance Criteria
-
-1. WHEN a User performs any action, THE System SHALL respond within 2 seconds under normal load conditions
-2. WHEN the System loads a dashboard with up to 100 Tasks, THE System SHALL complete rendering within 3 seconds
-3. WHEN multiple Users access the System concurrently, THE System SHALL maintain response time within acceptable limits
-4. WHEN the System performs database queries, THE System SHALL use appropriate indexes to optimize query performance
-5. THE System SHALL cache frequently accessed data to reduce database load
-
-### Requirement 12: Yêu cầu phi chức năng - Bảo mật và phân quyền
-
-**User Story:** Là một Project Manager, tôi muốn kiểm soát quyền truy cập vào dự án, để đảm bảo bảo mật thông tin.
+**User Story:** As a project manager, I want to track project and sprint progress, so that I can monitor team performance and identify bottlenecks.
 
 #### Acceptance Criteria
 
-1. THE System SHALL implement role-based access control with roles: Admin, Project Manager, and Team Member
-2. WHEN a User attempts to access a Project, THE System SHALL verify the User has appropriate permissions
-3. WHEN a User attempts to modify a Task, THE System SHALL verify the User has permission to edit that Task
-4. THE System SHALL log all security-related events including login attempts and permission changes
-5. THE System SHALL implement session timeout after 30 minutes of inactivity
+1. WHEN viewing project dashboard THEN the System SHALL display the percentage of completed tasks versus total tasks
+2. WHEN viewing sprint progress THEN the System SHALL display task distribution by status (TODO, IN_PROGRESS, DONE, BLOCKED)
+3. WHEN a task status changes THEN the System SHALL update the progress metrics in real-time
+4. WHEN viewing task details THEN the System SHALL display the task completion percentage based on subtasks if applicable
+5. THE System SHALL calculate and display velocity metrics based on completed tasks per sprint
 
-### Requirement 13: Yêu cầu phi chức năng - Khả năng mở rộng
+### Requirement 7: Báo cáo Sprint (Sprint Reporting)
 
-**User Story:** Là một system architect, tôi muốn hệ thống có kiến trúc dễ mở rộng, để có thể thêm tính năng mới trong tương lai.
+**User Story:** As a project manager, I want to generate sprint reports, so that I can review team performance and present results to stakeholders.
 
 #### Acceptance Criteria
 
-1. THE System SHALL implement a layered architecture separating presentation, business logic, and data access layers
-2. THE System SHALL use design patterns (Repository, Service, Factory) to promote code reusability
-3. THE System SHALL implement dependency injection to reduce coupling between components
-4. THE System SHALL provide clear interfaces between modules to enable independent development
-5. THE System SHALL follow SOLID principles in class design and implementation
+1. WHEN a project manager requests a sprint report THEN the System SHALL generate a report containing sprint summary, completed tasks, and team performance metrics
+2. WHEN generating a report THEN the System SHALL include task completion rate, velocity, and burndown chart data
+3. WHEN a sprint is completed THEN the System SHALL automatically generate a final sprint report
+4. WHEN viewing historical reports THEN the System SHALL display all past sprint reports for the project
+5. THE System SHALL allow exporting sprint reports in PDF or CSV format
+
+### Requirement 8: Tìm kiếm và Lọc (Search and Filter)
+
+**User Story:** As a user, I want to search and filter tasks, so that I can quickly find specific work items.
+
+#### Acceptance Criteria
+
+1. WHEN a user enters search keywords THEN the System SHALL return all tasks matching the keywords in title or description
+2. WHEN a user applies filters by status THEN the System SHALL display only tasks with the selected status
+3. WHEN a user applies filters by priority THEN the System SHALL display only tasks with the selected priority level
+4. WHEN a user applies filters by assignee THEN the System SHALL display only tasks assigned to the selected member
+5. WHEN a user applies multiple filters THEN the System SHALL display tasks matching all filter criteria
+
+### Requirement 9: Thông báo (Notifications)
+
+**User Story:** As a user, I want to receive notifications about task updates, so that I stay informed about changes affecting my work.
+
+#### Acceptance Criteria
+
+1. WHEN a task is assigned to a user THEN the System SHALL send a notification to that user
+2. WHEN a task deadline is approaching (within 24 hours) THEN the System SHALL send a reminder notification to the assignee
+3. WHEN a task status is changed by another user THEN the System SHALL notify the task assignee
+4. WHEN viewing notifications THEN the System SHALL display all unread notifications with timestamp and description
+5. WHEN a user marks a notification as read THEN the System SHALL update the notification status
+
+### Requirement 10: Dashboard và Tổng quan (Dashboard and Overview)
+
+**User Story:** As a user, I want to view a dashboard with overview of my tasks and projects, so that I can quickly understand my workload and priorities.
+
+#### Acceptance Criteria
+
+1. WHEN a user accesses the dashboard THEN the System SHALL display a summary of assigned tasks grouped by status
+2. WHEN viewing the dashboard THEN the System SHALL display upcoming deadlines and overdue tasks prominently
+3. WHEN viewing the dashboard THEN the System SHALL display active projects and current sprint information
+4. WHEN viewing the dashboard THEN the System SHALL display recent activity and updates
+5. THE System SHALL allow users to customize dashboard widgets and layout preferences
+
