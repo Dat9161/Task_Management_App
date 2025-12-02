@@ -179,25 +179,41 @@
     - Return appropriate HTTP status codes and error messages
     - _Requirements: All_
 
-- [ ] 6. Implement User service and authentication
-  - [ ] 6.1 Create UserService
+- [x] 6. Implement User service and authentication
+
+
+
+
+  - [x] 6.1 Create UserService
+
+
     - Implement registerUser method with password encryption
     - Implement getUserById, updateUser methods
     - Add validation for unique username and email
     - _Requirements: 1.1_
   
-  - [ ]* 6.2 Write property test for user registration
+  - [x] 6.2 Write property test for user registration
+
+
+
+
+
+
     - **Property 1: User registration creates unique accounts**
     - **Validates: Requirements 1.1**
   
-  - [ ] 6.3 Configure Spring Security
+  - [x] 6.3 Configure Spring Security
+
+
     - Setup SecurityConfig class
     - Configure password encoder (BCrypt)
     - Setup JWT token generation and validation
     - Configure authentication manager
     - _Requirements: 1.2, 1.4, 1.5_
   
-  - [ ] 6.4 Implement authentication service
+  - [x] 6.4 Implement authentication service
+
+
     - Create AuthService with login method
     - Implement JWT token generation
     - Implement logout functionality (token invalidation)
@@ -210,15 +226,22 @@
     - **Property 5: Passwords are encrypted**
     - **Validates: Requirements 1.2, 1.3, 1.4, 1.5**
 
-- [ ] 7. Implement Project service and operations
-  - [ ] 7.1 Create ProjectService
+- [x] 7. Implement Project service and operations
+
+
+
+  - [x] 7.1 Create ProjectService
+
+
     - Implement createProject method
     - Implement updateProject method
     - Implement deleteProject with cascade deletion
     - Implement getProjectById, getProjectsByUser methods
     - _Requirements: 2.1, 2.2, 2.3, 2.4_
   
-  - [ ] 7.2 Implement project member management
+  - [x] 7.2 Implement project member management
+
+
     - Implement addMemberToProject method
     - Implement removeMemberFromProject method
     - Add validation for project manager permissions
@@ -232,15 +255,23 @@
     - **Property 10: Adding members grants access**
     - **Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.5**
 
-- [ ] 8. Implement Sprint service and operations
-  - [ ] 8.1 Create SprintService
+- [x] 8. Implement Sprint service and operations
+
+
+
+
+  - [x] 8.1 Create SprintService
+
+
     - Implement createSprint method with date validation
     - Implement updateSprint method
     - Implement getSprintById, getSprintsByProject methods
     - Add validation to prevent overlapping sprint dates
     - _Requirements: 3.1, 3.5_
   
-  - [ ] 8.2 Implement sprint completion
+  - [x] 8.2 Implement sprint completion
+
+
     - Implement completeSprint method
     - Trigger automatic report generation on completion
     - _Requirements: 7.3_
@@ -251,26 +282,38 @@
     - **Property 14: Sprint dates do not overlap**
     - **Validates: Requirements 3.1, 3.4, 3.5**
 
-- [ ] 9. Implement Task service and operations
-  - [ ] 9.1 Create TaskService
+- [x] 9. Implement Task service and operations
+
+
+
+
+  - [x] 9.1 Create TaskService
+
+
     - Implement createTask method with initial TODO status
     - Implement updateTask method with timestamp update
     - Implement deleteTask method
     - Implement getTaskById, getTasksByProject, getTasksByAssignee methods
     - _Requirements: 4.1, 4.2, 4.4, 4.5_
   
-  - [ ] 9.2 Implement task status management
+  - [x] 9.2 Implement task status management
+
+
     - Implement updateTaskStatus method
     - Add validation for valid status transitions
     - _Requirements: 4.3_
   
-  - [ ] 9.3 Implement task assignment
+  - [x] 9.3 Implement task assignment
+
+
     - Implement assignTask method with project membership validation
     - Implement reassignTask method
     - Trigger notification on assignment
     - _Requirements: 5.1, 5.2, 5.3_
   
-  - [ ] 9.4 Implement task search and filter
+  - [x] 9.4 Implement task search and filter
+
+
     - Implement searchTasks method with keyword search
     - Implement filterTasks method supporting multiple criteria (status, priority, assignee)
     - Use AND logic for multiple filters
@@ -297,14 +340,22 @@
     - **Property 35: Multiple filters use AND logic**
     - **Validates: Requirements 8.1, 8.2, 8.3, 8.4, 8.5**
 
-- [ ] 10. Implement Notification service
-  - [ ] 10.1 Create NotificationService
+- [x] 10. Implement Notification service
+
+
+
+
+  - [x] 10.1 Create NotificationService
+
+
     - Implement createNotification method
     - Implement getUnreadNotifications method
     - Implement markAsRead method
     - _Requirements: 9.4, 9.5_
   
-  - [ ] 10.2 Implement notification triggers
+  - [x] 10.2 Implement notification triggers
+
+
     - Implement sendTaskAssignmentNotification method
     - Implement sendStatusChangeNotification method
     - Integrate with TaskService for automatic notifications
