@@ -70,6 +70,22 @@ CREATE TABLE IF NOT EXISTS notifications (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Stored Sprint Reports table
+CREATE TABLE IF NOT EXISTS stored_sprint_reports (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sprint_id BIGINT NOT NULL,
+    sprint_name VARCHAR(200) NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    sprint_summary VARCHAR(2000),
+    task_completion_rate DOUBLE NOT NULL,
+    velocity DOUBLE NOT NULL,
+    total_tasks INT NOT NULL,
+    completed_tasks INT NOT NULL,
+    generated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sprint_id) REFERENCES sprints(id) ON DELETE CASCADE
+);
+
 -- Indexes for performance
 CREATE INDEX idx_tasks_project ON tasks(project_id);
 CREATE INDEX idx_tasks_sprint ON tasks(sprint_id);
@@ -78,3 +94,5 @@ CREATE INDEX idx_tasks_status ON tasks(status);
 CREATE INDEX idx_sprints_project ON sprints(project_id);
 CREATE INDEX idx_notifications_user ON notifications(user_id);
 CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read);
+CREATE INDEX idx_stored_reports_sprint ON stored_sprint_reports(sprint_id);
+CREATE INDEX idx_stored_reports_generated ON stored_sprint_reports(generated_at);
