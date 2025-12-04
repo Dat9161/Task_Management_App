@@ -1,13 +1,12 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
+import Navbar from './components/Navbar';
 
 // Import pages
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';
 import ProjectListPage from './pages/ProjectListPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
 import TaskListPage from './pages/TaskListPage';
@@ -18,13 +17,16 @@ import NotificationPage from './pages/NotificationPage';
 import ReportPage from './pages/ReportPage';
 
 import './App.css';
+import './style.css';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <div className="App">
-          <Routes>
+          <Navbar />
+          <div className="app-content">
+            <Routes>
             {/* Public Routes */}
             <Route 
               path="/login" 
@@ -44,14 +46,6 @@ function App() {
             />
 
             {/* Protected Routes */}
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              } 
-            />
             <Route 
               path="/projects" 
               element={
@@ -118,11 +112,12 @@ function App() {
             />
 
             {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/projects" replace />} />
             
             {/* 404 - Not Found */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
+            <Route path="*" element={<Navigate to="/projects" replace />} />
+            </Routes>
+          </div>
         </div>
       </AuthProvider>
     </Router>

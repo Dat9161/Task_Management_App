@@ -240,6 +240,26 @@ public class TaskService {
     }
     
     /**
+     * Get all tasks for a specific sprint.
+     * 
+     * @param sprintId the sprint ID
+     * @return list of tasks in the sprint
+     * @throws ResourceNotFoundException if sprint is not found
+     */
+    @Transactional(readOnly = true)
+    public List<Task> getTasksBySprint(Long sprintId) {
+        if (sprintId == null) {
+            throw new ValidationException("Sprint ID cannot be null");
+        }
+        
+        // Verify sprint exists
+        sprintRepository.findById(sprintId)
+                .orElseThrow(() -> new ResourceNotFoundException("Sprint", sprintId));
+        
+        return taskRepository.findBySprintId(sprintId);
+    }
+    
+    /**
      * Update the status of a task.
      * Validates status transitions and persists the change.
      * Sends notification to assignee if status was changed by another user.

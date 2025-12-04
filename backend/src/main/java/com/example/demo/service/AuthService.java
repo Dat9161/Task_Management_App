@@ -36,6 +36,9 @@ public class AuthService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
     
+    @Autowired
+    private UserService userService;
+    
     /**
      * Authenticate user and generate JWT token.
      * 
@@ -59,7 +62,11 @@ public class AuthService {
             // Generate JWT token
             String jwt = jwtTokenProvider.generateToken(authentication);
             
-            return new LoginResponse(jwt, loginRequest.getUsername());
+            // Get user details
+            var user = userService.getUserByUsername(loginRequest.getUsername());
+            
+            return new LoginResponse(jwt, user.getId(), user.getUsername(), 
+                                   user.getEmail(), user.getRole().toString());
             
         } catch (BadCredentialsException ex) {
             throw new UnauthorizedException("Invalid username or password");

@@ -32,6 +32,9 @@ public class Project {
     )
     private List<User> members = new ArrayList<>();
     
+    @Column(name = "project_password")
+    private String projectPassword; // Encrypted password for project access
+    
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sprint> sprints = new ArrayList<>();
     
@@ -121,6 +124,14 @@ public class Project {
     
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+    
+    public String getProjectPassword() {
+        return projectPassword;
+    }
+    
+    public void setProjectPassword(String projectPassword) {
+        this.projectPassword = projectPassword;
     }
     
     // equals, hashCode, toString

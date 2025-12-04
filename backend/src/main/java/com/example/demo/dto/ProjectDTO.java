@@ -14,10 +14,13 @@ public class ProjectDTO {
     @Size(max = 1000, message = "Description must not exceed 1000 characters")
     private String description;
     
-    @NotNull(message = "Manager ID is required")
+    // Manager ID will be set automatically from authentication context
     private Long managerId;
     
     private List<Long> memberIds;
+    
+    @Size(min = 6, message = "Project password must be at least 6 characters")
+    private String projectPassword;
     
     // Constructors
     public ProjectDTO() {
@@ -61,5 +64,13 @@ public class ProjectDTO {
     
     public void setMemberIds(List<Long> memberIds) {
         this.memberIds = memberIds;
+    }
+    
+    public String getProjectPassword() {
+        return projectPassword;
+    }
+    
+    public void setProjectPassword(String projectPassword) {
+        this.projectPassword = projectPassword;
     }
 }

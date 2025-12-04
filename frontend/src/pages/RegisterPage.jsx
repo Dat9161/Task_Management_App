@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
+import Alert from '../components/Alert';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -104,21 +105,26 @@ const RegisterPage = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.formCard}>
-        <h1 style={styles.title}>Register</h1>
-        <p style={styles.subtitle}>Create your account</p>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1>Register</h1>
+          <p>Create your account</p>
+        </div>
         
         {apiError && (
-          <div style={styles.errorAlert}>
-            {apiError}
-          </div>
+          <Alert 
+            type="error" 
+            message={apiError}
+            onClose={() => setApiError('')}
+            autoClose={false}
+          />
         )}
         
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formGroup}>
-            <label htmlFor="username" style={styles.label}>
-              Username
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="username">
+              Username <span className="required">*</span>
             </label>
             <input
               type="text"
@@ -126,20 +132,18 @@ const RegisterPage = () => {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              style={{
-                ...styles.input,
-                ...(errors.username ? styles.inputError : {})
-              }}
+              className={errors.username ? 'input-error' : ''}
               disabled={loading}
+              placeholder="Choose a username"
             />
             {errors.username && (
-              <span style={styles.errorText}>{errors.username}</span>
+              <span className="error-text">{errors.username}</span>
             )}
           </div>
           
-          <div style={styles.formGroup}>
-            <label htmlFor="email" style={styles.label}>
-              Email
+          <div className="form-group">
+            <label htmlFor="email">
+              Email <span className="required">*</span>
             </label>
             <input
               type="email"
@@ -147,20 +151,18 @@ const RegisterPage = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              style={{
-                ...styles.input,
-                ...(errors.email ? styles.inputError : {})
-              }}
+              className={errors.email ? 'input-error' : ''}
               disabled={loading}
+              placeholder="Enter your email"
             />
             {errors.email && (
-              <span style={styles.errorText}>{errors.email}</span>
+              <span className="error-text">{errors.email}</span>
             )}
           </div>
           
-          <div style={styles.formGroup}>
-            <label htmlFor="password" style={styles.label}>
-              Password
+          <div className="form-group">
+            <label htmlFor="password">
+              Password <span className="required">*</span>
             </label>
             <input
               type="password"
@@ -168,20 +170,19 @@ const RegisterPage = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              style={{
-                ...styles.input,
-                ...(errors.password ? styles.inputError : {})
-              }}
+              className={errors.password ? 'input-error' : ''}
               disabled={loading}
+              placeholder="Create a password"
             />
             {errors.password && (
-              <span style={styles.errorText}>{errors.password}</span>
+              <span className="error-text">{errors.password}</span>
             )}
+            <small>Must be at least 8 characters with uppercase, lowercase, and digit</small>
           </div>
           
-          <div style={styles.formGroup}>
-            <label htmlFor="confirmPassword" style={styles.label}>
-              Confirm Password
+          <div className="form-group">
+            <label htmlFor="confirmPassword">
+              Confirm Password <span className="required">*</span>
             </label>
             <input
               type="password"
@@ -189,138 +190,40 @@ const RegisterPage = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              style={{
-                ...styles.input,
-                ...(errors.confirmPassword ? styles.inputError : {})
-              }}
+              className={errors.confirmPassword ? 'input-error' : ''}
               disabled={loading}
+              placeholder="Confirm your password"
             />
             {errors.confirmPassword && (
-              <span style={styles.errorText}>{errors.confirmPassword}</span>
+              <span className="error-text">{errors.confirmPassword}</span>
             )}
           </div>
           
           <button
             type="submit"
-            style={{
-              ...styles.button,
-              ...(loading ? styles.buttonDisabled : {})
-            }}
+            className="btn-primary w-full"
             disabled={loading}
           >
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? (
+              <>
+                <span className="loading-spinner" style={{ width: '16px', height: '16px', display: 'inline-block', marginRight: '8px' }}></span>
+                Registering...
+              </>
+            ) : (
+              'Register'
+            )}
           </button>
         </form>
         
-        <p style={styles.footer}>
-          Already have an account?{' '}
-          <a href="/login" style={styles.link}>
-            Login here
-          </a>
-        </p>
+        <div className="auth-footer">
+          <p>
+            Already have an account?{' '}
+            <Link to="/login">Login here</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-    padding: '20px'
-  },
-  formCard: {
-    backgroundColor: 'white',
-    padding: '40px',
-    borderRadius: '8px',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-    width: '100%',
-    maxWidth: '400px'
-  },
-  title: {
-    margin: '0 0 10px 0',
-    fontSize: '28px',
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center'
-  },
-  subtitle: {
-    margin: '0 0 30px 0',
-    fontSize: '14px',
-    color: '#666',
-    textAlign: 'center'
-  },
-  errorAlert: {
-    backgroundColor: '#fee',
-    color: '#c33',
-    padding: '12px',
-    borderRadius: '4px',
-    marginBottom: '20px',
-    fontSize: '14px',
-    border: '1px solid #fcc'
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  formGroup: {
-    marginBottom: '20px'
-  },
-  label: {
-    display: 'block',
-    marginBottom: '8px',
-    fontSize: '14px',
-    fontWeight: '500',
-    color: '#333'
-  },
-  input: {
-    width: '100%',
-    padding: '10px 12px',
-    fontSize: '14px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-    transition: 'border-color 0.2s'
-  },
-  inputError: {
-    borderColor: '#c33'
-  },
-  errorText: {
-    display: 'block',
-    marginTop: '6px',
-    fontSize: '12px',
-    color: '#c33'
-  },
-  button: {
-    width: '100%',
-    padding: '12px',
-    fontSize: '16px',
-    fontWeight: '500',
-    color: 'white',
-    backgroundColor: '#28a745',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s'
-  },
-  buttonDisabled: {
-    backgroundColor: '#6c757d',
-    cursor: 'not-allowed'
-  },
-  footer: {
-    marginTop: '20px',
-    textAlign: 'center',
-    fontSize: '14px',
-    color: '#666'
-  },
-  link: {
-    color: '#007bff',
-    textDecoration: 'none',
-    fontWeight: '500'
-  }
 };
 
 export default RegisterPage;

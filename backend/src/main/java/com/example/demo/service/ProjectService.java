@@ -25,18 +25,21 @@ public class ProjectService {
     
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
+    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository,
+                         org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
     
     /**
      * Create a new project with the specified manager.
-     * The creator is automatically set as the project manager.
+     * The manager ID must be set in the DTO before calling this method.
      * 
-     * @param projectDTO the project data transfer object
+     * @param projectDTO the project data transfer object (with managerId set)
      * @return the created Project entity
      * @throws ValidationException if project data is invalid
      * @throws ResourceNotFoundException if manager user is not found
@@ -52,7 +55,7 @@ public class ProjectService {
         }
         
         if (projectDTO.getManagerId() == null) {
-            throw new ValidationException("Manager ID is required");
+            throw new ValidationException("Manager ID must be set");
         }
         
         // Get manager user
@@ -64,6 +67,12 @@ public class ProjectService {
         project.setName(projectDTO.getName());
         project.setDescription(projectDTO.getDescription());
         project.setManager(manager);
+        
+        // Encrypt and set project password if provided
+        if (projectDTO.getProjectPassword() != null && !projectDTO.getProjectPassword().trim().isEmpty()) {
+            String encryptedPassword = passwordEncoder.encode(projectDTO.getProjectPassword());
+            project.setProjectPassword(encryptedPassword);
+        }
         
         // Add initial members if provided
         if (projectDTO.getMemberIds() != null && !projectDTO.getMemberIds().isEmpty()) {
@@ -108,6 +117,12 @@ public class ProjectService {
         // Update description (can be null or empty)
         if (projectDTO.getDescription() != null) {
             existingProject.setDescription(projectDTO.getDescription());
+        }
+        
+        // Update project password if provided
+        if (projectDTO.getProjectPassword() != null && !projectDTO.getProjectPassword().trim().isEmpty()) {
+            String encryptedPassword = passwordEncoder.encode(projectDTO.getProjectPassword());
+            existingProject.setProjectPassword(encryptedPassword);
         }
         
         return projectRepository.save(existingProject);

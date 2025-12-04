@@ -3,7 +3,9 @@ package com.example.demo.controller;
 import com.example.demo.dto.SprintDTO;
 import com.example.demo.dto.SprintReport;
 import com.example.demo.model.Sprint;
+import com.example.demo.model.Task;
 import com.example.demo.service.SprintService;
+import com.example.demo.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ public class SprintController {
     
     @Autowired
     private SprintService sprintService;
+    
+    @Autowired
+    private TaskService taskService;
     
     /**
      * Create a new sprint.
@@ -85,5 +90,17 @@ public class SprintController {
     public ResponseEntity<SprintReport> completeSprint(@PathVariable Long id) {
         SprintReport report = sprintService.completeSprint(id);
         return ResponseEntity.ok(report);
+    }
+    
+    /**
+     * Get all tasks for a sprint.
+     * 
+     * @param id Sprint ID
+     * @return List of tasks
+     */
+    @GetMapping("/{id}/tasks")
+    public ResponseEntity<List<Task>> getSprintTasks(@PathVariable Long id) {
+        List<Task> tasks = taskService.getTasksBySprint(id);
+        return ResponseEntity.ok(tasks);
     }
 }

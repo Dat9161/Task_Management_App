@@ -5,6 +5,8 @@ import TaskSummaryCard from '../components/TaskSummaryCard';
 import DeadlineWidget from '../components/DeadlineWidget';
 import ProjectListWidget from '../components/ProjectListWidget';
 import ActivityFeed from '../components/ActivityFeed';
+import Loading from '../components/Loading';
+import ErrorMessage from '../components/ErrorMessage';
 import '../style.css';
 
 const DashboardPage = () => {
@@ -36,21 +38,34 @@ const DashboardPage = () => {
     fetchDashboardData();
   }, [user]);
 
+  const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    if (user && user.id) {
+      api.get(`/dashboard/user/${user.id}`)
+        .then(response => {
+          setDashboardData(response.data);
+          setError(null);
+        })
+        .catch(err => {
+          console.error('Error fetching dashboard data:', err);
+          setError('Failed to load dashboard data. Please try again later.');
+        })
+        .finally(() => setLoading(false));
+    }
+  };
+
   if (loading) {
-    return (
-      <div className="dashboard-container">
-        <h1>Dashboard</h1>
-        <p>Loading dashboard...</p>
-      </div>
-    );
+    return <Loading message="Loading your dashboard..." />;
   }
 
   if (error) {
     return (
-      <div className="dashboard-container">
-        <h1>Dashboard</h1>
-        <div className="error-message">{error}</div>
-      </div>
+      <ErrorMessage 
+        title="Dashboard Error"
+        message={error}
+        onRetry={handleRetry}
+      />
     );
   }
 
@@ -64,7 +79,7 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container fade-in">
       <h1>Dashboard</h1>
       <p>Welcome back, {user?.username}!</p>
       
